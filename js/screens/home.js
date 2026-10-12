@@ -82,6 +82,8 @@ LU.screens.home = (() => {
     </li>`;
   }
 
+  let showFinished = false;
+
   function missions() {
     // Dienos pažanga ir premija skaičiuojamos iš visko (užduotys + šiandienos įpročiai),
     // bet sąraše rodomos tik vienkartinės užduotys – įpročiai yra „Mano įpročiai" kortelėje.
@@ -90,6 +92,9 @@ LU.screens.home = (() => {
     const due = all.filter((d) => d.task.type === 'once').sort((a, b) => !!b.task.important - !!a.task.important);
     const done = all.filter((d) => d.done).length;
     const allDone = all.length && done === all.length;
+    // atliktos misijos iš sąrašo dingsta; jas galima parodyti (ir atšaukti) per „Atliktos šiandien"
+    const open = due.filter((d) => !d.done);
+    const finished = due.filter((d) => d.done);
     return `
     <section class="card card-pad">
       <div class="flex items-center gap-3">
@@ -97,10 +102,15 @@ LU.screens.home = (() => {
         <h2 class="flex-1 min-w-0 text-[19px] sm:text-2xl font-extrabold leading-tight">Šiandienos misijos</h2>
       </div>
       ${allDone ? `<p class="mt-4 text-gold font-semibold flex items-center gap-2">Visos užduotys atliktos. Šaunuolis! <span class="pill-outline text-[10px] py-0.5">+${LU.config.ALL_DONE_BONUS} XP</span></p>` : ''}
-      ${due.length ? `<ul class="mt-4 space-y-2.5">${due.map(missionRow).join('')}</ul>` : `
+      ${open.length ? `<ul class="mt-4 space-y-2.5">${open.map(missionRow).join('')}</ul>` : `
         <div class="mt-4 rounded-2xl border border-dashed border-line2 p-5 text-center">
-          <p class="text-white/70 text-sm">Šiandien vienkartinių užduočių nėra.</p>
+          <p class="text-white/70 text-sm">${finished.length ? 'Visos šiandienos užduotys atliktos.' : 'Šiandien vienkartinių užduočių nėra.'}</p>
         </div>`}
+      ${finished.length ? `
+        <button data-action="toggle-finished" class="mt-3 inline-flex items-center gap-1.5 text-sm text-muted hover:text-white">
+          ${icon(showFinished ? 'chevron-down' : 'chevron-right', 'w-4 h-4')} Atliktos šiandien (${finished.length})
+        </button>
+        ${showFinished ? `<ul class="mt-2.5 space-y-2.5">${finished.map(missionRow).join('')}</ul>` : ''}` : ''}
       <button data-action="add-task" data-type="once" data-lock="1" class="mt-4 w-full h-12 rounded-2xl border border-dashed border-line2 text-white/60 hover:text-gold hover:border-gold/40 font-semibold inline-flex items-center justify-center gap-2 transition">
         ${icon('plus', 'w-5 h-5')} Pridėti užduotį
       </button>
@@ -149,6 +159,8 @@ LU.screens.home = (() => {
       <div class="lg:col-span-5 lg:self-start">${habits()}</div>
     </div>`;
   }
+
+  LU.actions['toggle-finished'] = () => { showFinished = !showFinished; LU.app.render(); };
 
   LU.actions.star = (el) => {
     const res = S.toggleImportant(el.dataset.id);
