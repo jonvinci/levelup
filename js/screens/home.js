@@ -117,8 +117,7 @@ LU.screens.home = (() => {
         <button data-action="manage-habits" class="text-gold font-bold text-sm inline-flex items-center gap-1">Valdyti ${icon('chevron-right', 'w-4 h-4')}</button>
       </div>
       ${list.length
-        ? `<p class="mt-3 text-xs text-muted">Paspausk įprotį, kad pažymėtum jį atliktu šiandien.</p>
-           <div class="mt-1 divide-y divide-line">${list.map(habitRow).join('')}</div>`
+        ? `<div class="mt-3 divide-y divide-line">${list.map(habitRow).join('')}</div>`
         : `<p class="mt-5 text-muted text-sm">Įpročių dar nėra. Pridėk pasikartojančią užduotį ir sek savo seriją.</p>`}
     </section>`;
   }
