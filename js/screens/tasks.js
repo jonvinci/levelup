@@ -61,7 +61,7 @@ LU.screens.tasks = (() => {
         <p class="eyebrow text-gold">Valdymas</p>
         <h1 class="mt-2 text-[30px] sm:text-4xl lg:text-5xl font-black tracking-tight uppercase leading-none">Įpročiai</h1>
       </div>
-      <button data-action="add-task" data-type="habit" class="btn-gold h-12 px-5 shrink-0">${icon('plus', 'w-5 h-5')}<span>Naujas</span></button>
+      <button data-action="add-task" data-type="habit" data-lock="1" class="btn-gold h-12 px-5 shrink-0">${icon('plus', 'w-5 h-5')}<span>Naujas</span></button>
     </section>
     <div class="max-w-3xl">
       ${section('Mano įpročiai', 'repeat', habits, 'Įpročių dar nėra. Pridėk pasikartojančią užduotį ir sek savo seriją.', 'habit')}
@@ -100,7 +100,7 @@ LU.screens.tasks = (() => {
       : { title: '', note: '', icon: 'target', xp: 10, type: preset.type || 'habit', days: [1, 2, 3, 4, 5, 6, 7], date: today };
     if (!C.XP_CHOICES.includes(f.xp)) f.custom = true;
     // Redaguojant ar kuriant iš „Įpročiai" puslapio tipas nekeičiamas – įprotis lieka įpročiu
-    const lockType = !!task || LU.app.route() === 'iprociai';
+    const lockType = !!task || !!preset.lock;
     const isHabit = f.type === 'habit';
 
     const html = `
@@ -246,7 +246,34 @@ LU.screens.tasks = (() => {
     }
   }
 
-  LU.actions['add-task'] = (el) => openForm(null, { type: el.dataset.type });
+  LU.actions['add-task'] = (el) => openForm(null, { type: el.dataset.type, lock: !!el.dataset.lock });
+
+  /** „Valdyti" prie „Mano įpročiai": įpročių valdymo langas tiesiog pagrindiniame ekrane. */
+  function openHabitsManager() {
+    const list = () => S.state.tasks.filter((t) => t.type === 'habit').sort((a, b) => a.order - b.order);
+    const body = () => {
+      const habits = list();
+      return habits.length
+        ? `<div class="list-group">${habits.map(row).join('')}</div>`
+        : '<p class="text-sm text-muted px-1">Įpročių dar nėra. Pridėk pirmą ir sek savo seriją.</p>';
+    };
+    let unsub = null;
+    modal(`
+      ${modalHeader('Valdyti įpročius', 'repeat')}
+      <div class="px-4 sm:px-6 pb-6">
+        <div data-habits>${body()}</div>
+        <button data-action="add-task" data-type="habit" data-lock="1" class="btn-gold w-full mt-4">${icon('plus', 'w-5 h-5')} Naujas įprotis</button>
+        <p class="mt-4 text-xs text-muted flex items-start gap-2">${icon('info', 'w-4 h-4 shrink-0')} Pieštukas – redaguoti, šiukšliadėžė – ištrinti. Jau uždirbtas XP lieka.</p>
+      </div>`, {
+      wide: true,
+      onMount: (el) => {
+        // pasikeitus duomenims (redagavus, pridėjus, ištrynus) – atnaujinam sąrašą lange
+        unsub = S.subscribe(() => { const box = el.querySelector('[data-habits]'); if (box) box.innerHTML = body(); });
+      },
+      onClose: () => { if (unsub) unsub(); },
+    });
+  }
+  LU.actions['manage-habits'] = openHabitsManager;
   LU.actions['edit-task'] = (el) => {
     const t = S.state.tasks.find((x) => x.id === el.dataset.id);
     if (t) openForm(t);

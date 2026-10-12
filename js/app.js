@@ -85,8 +85,8 @@ LU.app = (() => {
 
   function shell(r, content) {
     const li = S.levelInfo();
-    const navActive = (x) => (x === r || (x === 'meniu' && r === 'profilis') || (x === 'uzduotys' && r === 'iprociai'));
-    const sideActive = (x) => (x === r || (x === 'uzduotys' && r === 'iprociai'));
+    const navActive = (x) => (x === r || (x === 'meniu' && r === 'profilis') || (x === '' && r === 'iprociai'));
+    const sideActive = (x) => (x === r || (x === '' && r === 'iprociai'));
     return `
     <!-- Mobilus viršus -->
     <header class="lg:hidden sticky top-0 z-30 bg-bg/90 backdrop-blur-md border-b border-line pt-[env(safe-area-inset-top)]">
