@@ -31,7 +31,7 @@ LU.screens.home = (() => {
       <div class="relative w-[84px] h-[84px] sm:w-[96px] sm:h-[96px] shrink-0">
         <span class="sm:hidden">${ring(li.pct, 84, 5, 'rgba(255,255,255,0.08)', c)}</span>
         <span class="hidden sm:block">${ring(li.pct, 96, 5, 'rgba(255,255,255,0.08)', c)}</span>
-        <div class="absolute inset-[12px] sm:inset-[13px] rounded-2xl grid place-items-center" style="${boxStyle}">${LU.emblem(T.indexOf(li.title), 'w-[46px] h-[46px] sm:w-[52px] sm:h-[52px]')}</div>
+        <div class="absolute inset-[13px] sm:inset-[15px] rounded-2xl grid place-items-center" style="${boxStyle}">${LU.emblem(T.indexOf(li.title), 'w-10 h-10 sm:w-11 sm:h-11')}</div>
       </div>
       <div class="flex-1 min-w-0">
         <p class="eyebrow tracking-[0.25em]" style="color:${c}">Lygis ${li.level}</p>
