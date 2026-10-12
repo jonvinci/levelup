@@ -223,6 +223,7 @@ LU.app = (() => {
   // ---------- Paleidimas ----------
   async function boot() {
     await S.load();
+    LU.db.persist();
     if (S.state.profile) {
       S.touchDay();
       S.syncBonus(S.util.today());
@@ -241,7 +242,17 @@ LU.app = (() => {
 
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); app.installPrompt = e; });
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-      navigator.serviceWorker.register('sw.js').catch((err) => console.warn('SW nepavyko', err));
+      // Kai įsidiegia nauja versija – perkraunam vieną kartą, kad atnaujinimas matytųsi iš karto.
+      const hadController = !!navigator.serviceWorker.controller;
+      let reloading = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!hadController || reloading) return;
+        reloading = true;
+        S.flush().then(() => location.reload());
+      });
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+        .then((reg) => reg.update())
+        .catch((err) => console.warn('SW nepavyko', err));
     }
   }
 

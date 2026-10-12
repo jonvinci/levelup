@@ -1,6 +1,6 @@
 // Service worker: visa programėlė talpinama kešė, kad veiktų offline.
 // Pakeitus failus – padidink VERSION, kad naršyklė atsisiųstų naujus.
-const VERSION = 'levelup-v1.0.0';
+const VERSION = 'levelup-v1.0.1';
 const ASSETS = [
   './',
   './index.html',
@@ -29,7 +29,8 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  // cache: 'reload' – imam šviežius failus iš tinklo, ne iš naršyklės HTTP kešo
+  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(ASSETS.map((u) => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {

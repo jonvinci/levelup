@@ -1,4 +1,7 @@
-// Lokali saugykla: IndexedDB (atsarginis variantas – localStorage). Visa būsena saugoma vienu dokumentu.
+// Lokali saugykla. Kiekvienas įrašymas eina į DVI vietas:
+//  - localStorage – sinchroniškai, iš karto (išlieka net jei telefonas tuoj pat uždaro programėlę);
+//  - IndexedDB – asinchroniškai (didesnė talpa).
+// Įkeliant paimama naujesnė kopija (pagal savedAt).
 window.LU = window.LU || {};
 
 LU.db = (() => {
@@ -25,18 +28,21 @@ LU.db = (() => {
     return dbPromise;
   }
 
-  async function load() {
+  async function loadIdb() {
     const db = await open();
-    if (db) {
-      try {
-        const val = await new Promise((resolve, reject) => {
-          const req = db.transaction(STORE, 'readonly').objectStore(STORE).get(KEY);
-          req.onsuccess = () => resolve(req.result);
-          req.onerror = () => reject(req.error);
-        });
-        if (val) return val;
-      } catch (e) { /* krentam į localStorage */ }
+    if (!db) return null;
+    try {
+      return await new Promise((resolve, reject) => {
+        const req = db.transaction(STORE, 'readonly').objectStore(STORE).get(KEY);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => reject(req.error);
+      });
+    } catch (e) {
+      return null;
     }
+  }
+
+  function loadLs() {
     try {
       const raw = localStorage.getItem(LS_KEY);
       return raw ? JSON.parse(raw) : null;
@@ -45,26 +51,42 @@ LU.db = (() => {
     }
   }
 
-  async function save(state) {
-    const db = await open();
-    if (db) {
-      try {
-        await new Promise((resolve, reject) => {
+  async function load() {
+    const a = await loadIdb();
+    const b = loadLs();
+    if (a && b) return (b.savedAt || 0) > (a.savedAt || 0) ? b : a;
+    return a || b;
+  }
+
+  function saveIdb(state) {
+    return open().then((db) => {
+      if (!db) return false;
+      return new Promise((resolve) => {
+        try {
           const tx = db.transaction(STORE, 'readwrite');
           tx.objectStore(STORE).put(state, KEY);
-          tx.oncomplete = resolve;
-          tx.onerror = () => reject(tx.error);
-        });
-        return true;
-      } catch (e) { /* krentam į localStorage */ }
-    }
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => resolve(false);
+          tx.onabort = () => resolve(false);
+        } catch (e) {
+          resolve(false);
+        }
+      });
+    });
+  }
+
+  /** Įrašo iš karto: localStorage sinchroniškai, IndexedDB fone. */
+  function save(state) {
+    state.savedAt = Date.now();
+    let lsOk = false;
     try {
       localStorage.setItem(LS_KEY, JSON.stringify(state));
-      return true;
-    } catch (e) {
-      console.error('Nepavyko išsaugoti', e);
-      return false;
-    }
+      lsOk = true;
+    } catch (e) { /* pvz. viršyta talpa – liks IndexedDB */ }
+    return saveIdb(state).then((idbOk) => {
+      if (!idbOk && !lsOk) console.error('Nepavyko išsaugoti duomenų');
+      return idbOk || lsOk;
+    });
   }
 
   async function clear() {
@@ -80,5 +102,13 @@ LU.db = (() => {
     try { localStorage.removeItem(LS_KEY); } catch (e) { /* ignore */ }
   }
 
-  return { load, save, clear };
+  /** Paprašo naršyklės saugyklos automatiškai nevalyti. */
+  function persist() {
+    try {
+      if (navigator.storage && navigator.storage.persist) return navigator.storage.persist().catch(() => false);
+    } catch (e) { /* ignore */ }
+    return Promise.resolve(false);
+  }
+
+  return { load, save, clear, persist };
 })();

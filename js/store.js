@@ -27,7 +27,6 @@ window.LU = window.LU || {};
 LU.store = (() => {
   const C = LU.config;
   let state = null;
-  let saveTimer = null;
   const subs = new Set();
 
   // ---------- pagalbinės ----------
@@ -52,14 +51,11 @@ LU.store = (() => {
     state = Object.assign(emptyState(), saved || {});
     return state;
   }
+  /** Įrašo iš karto (be uždelsimo), kad nieko neprarastume telefonui uždarius programėlę. */
   function save() {
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => LU.db.save(state), 150);
-  }
-  function flush() {
-    clearTimeout(saveTimer);
     return state ? LU.db.save(state) : Promise.resolve();
   }
+  const flush = save;
   function commit() {
     save();
     subs.forEach((fn) => fn());
