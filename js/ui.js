@@ -56,13 +56,13 @@ LU.ui = (() => {
   }
 
   /** Apskritas progresas (SVG). */
-  function ring(pct, size = 48, stroke = 4, track = 'rgba(255,255,255,0.08)') {
+  function ring(pct, size = 48, stroke = 4, track = 'rgba(255,255,255,0.08)', color = 'url(#lu-gold)') {
     const r = (size - stroke) / 2;
     const c = 2 * Math.PI * r;
     const off = c * (1 - Math.max(0, Math.min(100, pct)) / 100);
     return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="absolute inset-0 -rotate-90" aria-hidden="true">
       <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${track}" stroke-width="${stroke}"/>
-      <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="url(#lu-gold)" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" class="transition-[stroke-dashoffset] duration-700"/>
+      <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" class="transition-[stroke-dashoffset] duration-700"/>
     </svg>`;
   }
 

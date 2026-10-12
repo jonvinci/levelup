@@ -6,32 +6,48 @@ LU.screens.home = (() => {
   const { icon, esc, fmt, ring, avatar, scheduleText, dayLabel } = LU.ui;
   const S = LU.store;
 
+  /** hex -> rgba() su nurodytu permatomumu. */
+  function rgba(hex, a) {
+    const n = parseInt(hex.slice(1), 16);
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+  }
+
+  /** Lygio kortelė, nuspalvinta dabartinio titulo spalva (aukštesni titulai – ryškesni). */
   function levelCard(st) {
     const li = st.levelInfo;
-    const next = LU.config.TITLES.find((t) => t.from > li.level);
+    const T = LU.config.TITLES;
+    const next = T.find((t) => t.from > li.level);
+    const c = li.title.color || '#F0B429';
+    const tier = Math.max(0, T.indexOf(li.title)) / (T.length - 1); // 0 – Naujokas, 1 – Čempionas
+    const cardStyle = [
+      `border:1px solid ${rgba(c, 0.25 + 0.2 * tier)}`,
+      `background:radial-gradient(120% 140% at 0% 0%, ${rgba(c, 0.08 + 0.12 * tier)}, transparent 55%), linear-gradient(180deg, ${rgba(c, 0.04 + 0.04 * tier)}, rgba(18,18,20,1))`,
+      tier > 0.85 ? `box-shadow:0 0 40px ${rgba(c, 0.18)}` : '',
+    ].filter(Boolean).join(';');
+    const boxStyle = `background:${rgba(c, 0.12)};border:1px solid ${rgba(c, 0.35)};color:${c}`;
     return `
-    <a href="#/lygiai" class="card-gold h-full p-5 sm:p-6 lg:p-8 flex flex-col justify-center gap-7 group">
+    <a href="#/lygiai" class="rounded-4xl h-full p-5 sm:p-6 lg:p-8 flex flex-col justify-center gap-7 group" style="${cardStyle}">
       <div class="flex items-center gap-5">
       <div class="relative w-[84px] h-[84px] sm:w-[96px] sm:h-[96px] shrink-0">
-        <span class="sm:hidden">${ring(li.pct, 84, 5)}</span>
-        <span class="hidden sm:block">${ring(li.pct, 96, 5)}</span>
-        <div class="absolute inset-[13px] sm:inset-[15px] icon-box-gold rounded-2xl">${icon(S.levelIcon(li.level), 'w-7 h-7 sm:w-8 sm:h-8')}</div>
+        <span class="sm:hidden">${ring(li.pct, 84, 5, 'rgba(255,255,255,0.08)', c)}</span>
+        <span class="hidden sm:block">${ring(li.pct, 96, 5, 'rgba(255,255,255,0.08)', c)}</span>
+        <div class="absolute inset-[13px] sm:inset-[15px] rounded-2xl grid place-items-center" style="${boxStyle}">${icon(S.levelIcon(li.level), 'w-7 h-7 sm:w-8 sm:h-8')}</div>
       </div>
       <div class="flex-1 min-w-0">
-        <p class="eyebrow text-gold tracking-[0.25em]">Lygis ${li.level}</p>
-        <h2 class="mt-1 text-2xl sm:text-[28px] font-extrabold leading-tight">${esc(li.title.name)}</h2>
+        <p class="eyebrow tracking-[0.25em]" style="color:${c}">Lygis ${li.level}</p>
+        <h2 class="mt-1 ${li.title.name.length > 11 ? 'text-[21px] sm:text-[26px]' : 'text-2xl sm:text-[28px]'} font-extrabold leading-tight truncate">${esc(li.title.name)}</h2>
         <p class="mt-1.5 text-sm text-muted">
-          ${li.max ? 'Pasiekei aukščiausią lygį!' : `Dar <b class="text-gold">${fmt(li.remaining)} XP</b> iki ${li.level + 1} lygio`}
+          ${li.max ? 'Pasiekei aukščiausią lygį!' : `Dar <b style="color:${c}">${fmt(li.remaining)} XP</b> iki ${li.level + 1} lygio`}
         </p>
       </div>
-      <span class="text-gold group-hover:translate-x-1 transition">${icon('chevron-right', 'w-6 h-6')}</span>
+      <span class="group-hover:translate-x-1 transition" style="color:${c}">${icon('chevron-right', 'w-6 h-6')}</span>
       </div>
       <div class="hidden lg:block">
         <div class="flex items-center justify-between text-sm">
           <span class="text-muted tabular-nums">${fmt(li.xp)} / ${fmt(li.max ? li.xp : li.next)} XP</span>
           <b class="tabular-nums">${li.pct} %</b>
         </div>
-        <div class="bar mt-2.5 h-3"><i style="width:${li.pct}%"></i></div>
+        <div class="bar mt-2.5 h-3"><i style="width:${li.pct}%;background:${c}"></i></div>
         ${next ? `<div class="mt-5 flex items-center gap-3 rounded-2xl border border-line bg-black/20 px-4 py-3">
           <span class="text-white/40">${icon('lock', 'w-4 h-4')}</span>
           <span class="text-sm text-muted">Kitas titulas</span>

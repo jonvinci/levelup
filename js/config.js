@@ -7,7 +7,7 @@ LU.screens = LU.screens || {};
 
 LU.config = {
   APP_NAME: 'LEVEL UP',
-  VERSION: '1.3.2',
+  VERSION: '1.4.0',
 
   // ---------------- XP KREIVĖ ----------------
   MAX_LEVEL: 50,
@@ -44,34 +44,35 @@ LU.config = {
   TASK_XP: 5,
 
   // ---------------- TITULAI ----------------
+  // color – titulo spalva pagrindinio ekrano lygio kortelėje: pradžioje išblukusios, vėliau vis ryškesnės.
   TITLES: [
-    { from: 1, to: 4, name: 'Naujokas',
+    { from: 1, to: 4, name: 'Naujokas', color: '#8A8682',
       text: 'Tavo kelionė prasideda čia. Žengi pirmus žingsnius, mokaisi žaidimo taisyklių ir kuri pirmus įpročius. Kiekviena užduotis – plyta tavo pamatams.' },
-    { from: 5, to: 7, name: 'Žaidėjas',
+    { from: 5, to: 7, name: 'Žaidėjas', color: '#8E8A76',
       text: 'Tu nebe stebėtojas. Įsijungei į žaidimą, atlikai pirmas užduotis ir supratai, kaip viskas veikia. Dabar žaidi tu.' },
-    { from: 8, to: 10, name: 'Kovotojas',
+    { from: 8, to: 10, name: 'Kovotojas', color: '#927F69',
       text: 'Pradžios entuziazmas praėjo, bet tu vis dar čia. Kovoji su tingumu, atidėliojimu ir pasiteisinimais. Ir laimi vis dažniau.' },
-    { from: 11, to: 14, name: 'Ryžtingasis',
+    { from: 11, to: 14, name: 'Ryžtingasis', color: '#7F8F78',
       text: 'Sprendimai tau nebėra sunkūs. Žinai, ko nori, ir darai tai net tada, kai niekas nemato. Tavo žodis sau kažką reiškia.' },
-    { from: 15, to: 17, name: 'Disciplinuotas',
+    { from: 15, to: 17, name: 'Disciplinuotas', color: '#6E8C98',
       text: 'Motyvacija ateina ir praeina, o tavo įpročiai lieka. Darai tai, ką reikia, nes taip nusprendei, o ne todėl, kad norisi.' },
-    { from: 18, to: 20, name: 'Atkaklusis',
+    { from: 18, to: 20, name: 'Atkaklusis', color: '#4F9AB0',
       text: 'Nesėkmės tavęs nesustabdo. Praleista diena – tik pauzė, ne pabaiga. Atsikeli ir tęsi, kol kiti dar svarsto.' },
-    { from: 21, to: 24, name: 'Strategas',
+    { from: 21, to: 24, name: 'Strategas', color: '#3D8EE0',
       text: 'Tu ne tik darai, bet ir planuoji. Matai didesnį vaizdą, renkiesi, kur investuoti laiką ir energiją. Kiekvienas ėjimas turi tikslą.' },
-    { from: 25, to: 27, name: 'Meistras',
+    { from: 25, to: 27, name: 'Meistras', color: '#21B57A',
       text: 'Tai, kas kitiems atrodo sunku, tau tapo kasdienybe. Tavo įpročiai nušlifuoti, o rezultatai kalba patys už save.' },
-    { from: 28, to: 30, name: 'Kūrėjas',
+    { from: 28, to: 30, name: 'Kūrėjas', color: '#14CDB0',
       text: 'Nebeprisitaikai prie aplinkybių – jas kuri. Paverti idėjas veiksmais ir statai tai, kas išliks ilgiau nei viena diena.' },
-    { from: 31, to: 34, name: 'Nepalaužiamas',
+    { from: 31, to: 34, name: 'Nepalaužiamas', color: '#8A63FF',
       text: 'Spaudimas tave grūdina, o ne laužo. Sunkiausiomis dienomis lieki ištikimas savo sistemai. Tai ir yra tavo stiprybė.' },
-    { from: 35, to: 37, name: 'Verslininkas',
+    { from: 35, to: 37, name: 'Verslininkas', color: '#C04BFF',
       text: 'Į savo laiką žiūri kaip į kapitalą. Investuoji į save, skaičiuoji grąžą ir kuri vertę ne tik sau, bet ir kitiems.' },
-    { from: 38, to: 40, name: 'Vizionierius',
+    { from: 38, to: 40, name: 'Vizionierius', color: '#FF3D7F',
       text: 'Matai toliau nei šiandiena. Tavo tikslai dideli, bet kasdieniai veiksmai juos paverčia planu, o ne svajone.' },
-    { from: 41, to: 44, name: 'Lyderis',
+    { from: 41, to: 44, name: 'Lyderis', color: '#FF4B1F',
       text: 'Kiti pastebi tavo pokytį ir seka tavo pavyzdžiu. Tu nebe tik tobulėji pats – tu įkvepi ir trauki kitus kartu.' },
-    { from: 45, to: 50, name: 'Čempionas',
+    { from: 45, to: 50, name: 'Čempionas', color: '#FFC400',
       text: 'Viršūnė pasiekta, bet žaidimas nesibaigia. Tu įrodei, kad disciplina, kantrybė ir kasdieniai žingsniai sukuria čempioną.' },
   ],
 
