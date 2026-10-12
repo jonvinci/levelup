@@ -41,13 +41,18 @@ LU.screens.home = (() => {
     </a>`;
   }
 
+  /** Misijos žymė: tuščia žvaigždutė, atlikus – užpildyta auksinė. */
+  function star(done) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${done ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round" class="w-7 h-7 ${done ? 'text-gold drop-shadow-[0_0_6px_rgba(240,180,41,0.45)]' : 'text-white/35'}" aria-hidden="true">${LU.ICONS.star}</svg>`;
+  }
+
   function missionRow(d) {
     const t = d.task;
     const just = LU.app.justToggled === t.id;
     return `
     <li>
       <button data-action="toggle" data-id="${t.id}" class="mission ${d.done ? 'done' : ''} ${just ? 'just' : ''} w-full flex items-center gap-2.5 sm:gap-3 rounded-2xl border px-3 sm:px-4 py-3.5 text-left ${d.done ? 'bg-gold/[0.07] border-gold/25' : 'bg-well border-line hover:border-line2'}" aria-pressed="${d.done}">
-        <span class="chk w-7 h-7 rounded-full grid place-items-center shrink-0 ${d.done ? 'bg-gold text-black' : 'border-2 border-white/20'}">${d.done ? icon('check', 'w-4 h-4', 3) : ''}</span>
+        <span class="chk w-7 h-7 grid place-items-center shrink-0">${star(d.done)}</span>
         <span class="flex-1 min-w-0">
           <span class="m-title block font-semibold leading-snug text-[15px] sm:text-base">${esc(t.title)}${t.note ? ` – ${esc(t.note)}` : ''}</span>
           ${d.carried ? `<span class="block text-xs text-flame mt-0.5">Perkelta iš ${dayLabel(t.date).toLowerCase()}</span>` : ''}
