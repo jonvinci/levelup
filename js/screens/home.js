@@ -118,7 +118,7 @@ LU.screens.home = (() => {
       <span class="chk w-8 h-8 rounded-full grid place-items-center shrink-0 ${doneToday ? 'bg-gold text-black' : 'border-2 border-white/20'}">${doneToday ? icon('check', 'w-4 h-4', 3) : ''}</span>
       <span class="flex-1 min-w-0">
         <span class="block font-semibold truncate ${doneToday ? 'text-white/60' : ''}">${esc(t.title)}${t.note ? `<span class="font-normal text-muted"> – ${esc(t.note)}</span>` : ''}</span>
-        <span class="mt-0.5 flex items-center gap-1 text-xs text-muted min-w-0">${icon(t.icon, 'w-3.5 h-3.5 shrink-0')}<span class="truncate">${scheduleText(t.days)} · ${LU.config.TASK_XP} XP</span></span>
+        <span class="mt-0.5 flex items-center gap-1 text-xs text-muted min-w-0">${icon(t.icon, 'w-3.5 h-3.5 shrink-0')}<span class="truncate">${S.isAutoHabit(t) ? 'Automatiškai · svarbios užduotys' : `${scheduleText(t.days)} · ${LU.config.TASK_XP} XP`}</span></span>
       </span>
       <div class="w-9 sm:w-11 shrink-0 flex items-center justify-end gap-0.5 font-extrabold tabular-nums ${streak ? 'text-flame' : 'text-dim'}">
         ${icon('flame', 'w-4 h-4')}${streak}
@@ -151,8 +151,10 @@ LU.screens.home = (() => {
   }
 
   LU.actions.star = (el) => {
-    const on = S.toggleImportant(el.dataset.id);
-    LU.ui.toast(on ? 'Pažymėta kaip svarbi' : 'Nebežymima kaip svarbi', { icon: 'star', ms: 1600 });
+    const res = S.toggleImportant(el.dataset.id);
+    if (!res) return;
+    LU.ui.toast(res.important ? 'Pažymėta kaip svarbi' : 'Nebežymima kaip svarbi', { icon: 'star', ms: 1600 });
+    LU.app.afterChange(res);
   };
 
   LU.actions['scroll-habits'] = () => {

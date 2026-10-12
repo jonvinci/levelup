@@ -51,6 +51,7 @@ LU.store = (() => {
     state = Object.assign(emptyState(), saved || {});
     // visos užduotys ir įpročiai duoda vienodai XP (C.TASK_XP)
     state.tasks.forEach((t) => { t.xp = C.TASK_XP; });
+    ensureAutoHabit();
     return state;
   }
   /** Įrašo iš karto (be uždelsimo), kad nieko neprarastume telefonui uždarius programėlę. */
@@ -68,6 +69,7 @@ LU.store = (() => {
   function createProfile(name) {
     state.profile = { id: uid(), name: name.trim(), avatar: null, goal: '', tags: [], createdAt: new Date().toISOString() };
     if (!state.tasks.length) seedTasks();
+    ensureAutoHabit();
     touchDay();
     commit();
   }
@@ -154,31 +156,61 @@ LU.store = (() => {
    * Pažymi / atšaukia šiandienos užduotį.
    * Grąžina { done, xp, bonus, levelUp, achievements }.
    */
-  function toggleTask(id) {
-    const date = today();
-    const task = state.tasks.find((t) => t.id === id);
-    if (!task) return null;
-    const before = levelInfo().level;
+  // ---------- atlikimo pagalbinės ----------
+  function markDone(task, date) {
     const day = (state.completions[date] = state.completions[date] || {});
-    const res = { done: false, xp: 0, bonus: 0, levelUp: null, achievements: [] };
+    const at = new Date().toISOString();
+    day[task.id] = { at, xp: C.TASK_XP };
+    state.xpLog.push({ id: uid(), at, date, amount: C.TASK_XP, kind: 'task', taskId: task.id, label: task.title, icon: task.icon });
+    if (task.type === 'once') task.doneDate = date;
+  }
+  function markUndone(task, date) {
+    const day = state.completions[date];
+    if (!day || !day[task.id]) return;
+    delete day[task.id];
+    if (!Object.keys(day).length) delete state.completions[date];
+    state.xpLog = state.xpLog.filter((l) => !(l.kind === 'task' && l.taskId === task.id && l.date === date));
+    if (task.type === 'once') task.doneDate = null;
+  }
 
-    if (day[id]) {
-      res.xp = -day[id].xp;
-      delete day[id];
-      if (!Object.keys(day).length) delete state.completions[date];
-      state.xpLog = state.xpLog.filter((l) => !(l.kind === 'task' && l.taskId === id && l.date === date));
-      if (task.type === 'once') task.doneDate = null;
-    } else {
-      const at = new Date().toISOString();
-      day[id] = { at, xp: C.TASK_XP };
-      state.xpLog.push({ id: uid(), at, date, amount: C.TASK_XP, kind: 'task', taskId: id, label: task.title, icon: task.icon });
-      if (task.type === 'once') task.doneDate = date;
-      res.done = true;
-      res.xp = C.TASK_XP;
+  // ---------- automatinis įprotis „Įvykdyti svarbias užduotis" ----------
+  const isAutoHabit = (t) => t.type === 'habit' && t.auto === 'important';
+  const AUTO_HABIT_TITLE = 'Įvykdyti svarb. užduotis';
+
+  /**
+   * Vieną kartą sukuria (arba pažymi esamą) įprotį, kuris pasižymi automatiškai,
+   * kai šiandien atliktos visos žvaigždute pažymėtos misijos. Ištrintas nebeatkuriamas.
+   */
+  function ensureAutoHabit() {
+    if (state.autoHabitInit || !state.profile) return;
+    if (!state.tasks.some(isAutoHabit)) {
+      const existing = state.tasks.find((t) => t.type === 'habit' && /svarb/i.test(t.title));
+      if (existing) existing.auto = 'important';
+      else {
+        const t = addTask({ title: AUTO_HABIT_TITLE, icon: 'star', type: 'habit', days: [1, 2, 3, 4, 5, 6, 7] }, true);
+        t.auto = 'important';
+      }
     }
+    state.autoHabitInit = true;
+  }
+
+  /** Pažymi / atšaukia automatinį įprotį pagal svarbias šiandienos misijas. Grąžina +1 / -1 / 0. */
+  function syncAutoHabit(date) {
+    const habit = state.tasks.find(isAutoHabit);
+    if (!habit || !isDue(habit, date)) return 0;
+    const important = dueTasks(date).filter((d) => d.task.type === 'once' && d.task.important);
+    const shouldBeDone = important.length > 0 && important.every((d) => d.done);
+    const isDone = !!(state.completions[date] && state.completions[date][habit.id]);
+    if (shouldBeDone && !isDone) { markDone(habit, date); return 1; }
+    if (!shouldBeDone && isDone) { markUndone(habit, date); return -1; }
+    return 0;
+  }
+
+  /** Bendra pabaiga po pakeitimo: automatinis įprotis, premija, lygis, pasiekimai. */
+  function finishChange(res, date, before) {
+    res.auto = syncAutoHabit(date);
     res.bonus = syncBonus(date);
     touchDay();
-
     const after = levelInfo().level;
     if (after > before && after > state.maxLevel) {
       state.maxLevel = after;
@@ -190,17 +222,41 @@ LU.store = (() => {
     return res;
   }
 
-  /** Pažymi / nuima „svarbi" žymę (žvaigždutė). XP ir atlikimui įtakos neturi. Grąžina naują būseną. */
+  /**
+   * Pažymi / atšaukia šiandienos užduotį.
+   * Grąžina { done, xp, bonus, auto, levelUp, achievements } arba { blocked } automatiniam įpročiui.
+   */
+  function toggleTask(id) {
+    const date = today();
+    const task = state.tasks.find((t) => t.id === id);
+    if (!task) return null;
+    if (isAutoHabit(task)) return { blocked: true, task };
+    const before = levelInfo().level;
+    const res = { done: false, xp: 0, bonus: 0, auto: 0, levelUp: null, achievements: [] };
+    const day = state.completions[date] || {};
+    if (day[id]) {
+      res.xp = -day[id].xp;
+      markUndone(task, date);
+    } else {
+      markDone(task, date);
+      res.done = true;
+      res.xp = C.TASK_XP;
+    }
+    return finishChange(res, date, before);
+  }
+
+  /** Pažymi / nuima „svarbi" žymę (žvaigždutė). Gali automatiškai pažymėti „svarbių užduočių" įprotį. */
   function toggleImportant(id) {
     const t = state.tasks.find((x) => x.id === id);
-    if (!t) return false;
+    if (!t) return null;
+    const before = levelInfo().level;
     t.important = !t.important;
-    commit();
-    return t.important;
+    return finishChange({ important: t.important, xp: 0, bonus: 0, auto: 0, levelUp: null, achievements: [] }, today(), before);
   }
 
   /** Užtikrina, kad „visos misijos atliktos" premija atitiktų dabartinę būseną. Grąžina XP pokytį. */
   function syncBonus(date) {
+    syncAutoHabit(date);
     const due = dueTasks(date);
     const allDone = due.length > 0 && due.every((d) => d.done);
     const idx = state.xpLog.findIndex((l) => l.kind === 'bonus' && l.date === date);
@@ -424,6 +480,7 @@ LU.store = (() => {
       throw new Error('Šis failas nėra LEVEL UP atsarginė kopija.');
     }
     state = Object.assign(emptyState(), s);
+    ensureAutoHabit();
     touchDay();
     syncBonus(today());
     commit();
@@ -439,7 +496,7 @@ LU.store = (() => {
     get state() { return state; },
     load, save, flush, commit, subscribe,
     createProfile, updateProfile, touchDay,
-    dueTasks, addTask, updateTask, deleteTask, toggleTask, toggleImportant, syncBonus,
+    dueTasks, addTask, updateTask, deleteTask, toggleTask, toggleImportant, syncBonus, isAutoHabit,
     totalXp, levelInfo, levelStartXp, titleFor, levelIcon, stats,
     habitHistory, habitStreak, checkAchievements,
     unreadCount, markAllRead,
