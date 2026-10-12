@@ -120,7 +120,7 @@ LU.screens.home = (() => {
     <button data-action="toggle" data-id="${t.id}" class="mission ${just ? 'just' : ''} w-full flex items-center gap-2.5 sm:gap-3 py-3.5 text-left rounded-xl" aria-pressed="${doneToday}" aria-label="${esc(t.title)} – ${doneToday ? 'atlikta šiandien, paspausk, kad atšauktum' : 'pažymėti atlikta šiandien'}">
       <span class="chk w-8 h-8 rounded-full grid place-items-center shrink-0 ${doneToday ? 'bg-gold text-black' : 'border-2 border-white/20'}">${doneToday ? icon('check', 'w-4 h-4', 3) : ''}</span>
       <span class="flex-1 min-w-0">
-        <span class="block font-semibold truncate ${doneToday ? 'text-white/60' : ''}">${esc(t.title)}</span>
+        <span class="block font-semibold truncate ${doneToday ? 'text-white/60' : ''}">${esc(t.title)}${t.note ? `<span class="font-normal text-muted"> – ${esc(t.note)}</span>` : ''}</span>
         <span class="mt-0.5 flex items-center gap-1 text-xs text-muted min-w-0">${icon(t.icon, 'w-3.5 h-3.5 shrink-0')}<span class="truncate">${scheduleText(t.days)} · ${t.xp} XP</span></span>
       </span>
       <div class="flex gap-[3px] sm:gap-1 items-end" aria-label="Paskutinės 7 dienos">

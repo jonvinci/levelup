@@ -99,14 +99,17 @@ LU.screens.tasks = (() => {
       ? { ...task, days: [...task.days], date: task.date || today }
       : { title: '', note: '', icon: 'target', xp: 10, type: preset.type || 'habit', days: [1, 2, 3, 4, 5, 6, 7], date: today };
     if (!C.XP_CHOICES.includes(f.xp)) f.custom = true;
+    // Redaguojant ar kuriant iš „Įpročiai" puslapio tipas nekeičiamas – įprotis lieka įpročiu
+    const lockType = !!task || LU.app.route() === 'iprociai';
+    const isHabit = f.type === 'habit';
 
     const html = `
-      ${modalHeader(task ? (task.type === 'habit' ? 'Redaguoti įprotį' : 'Redaguoti užduotį') : (f.type === 'habit' && preset.type ? 'Naujas įprotis' : 'Nauja užduotis'), f.type === 'habit' ? 'repeat' : 'list-todo')}
+      ${modalHeader(task ? (isHabit ? 'Redaguoti įprotį' : 'Redaguoti užduotį') : (lockType ? 'Naujas įprotis' : 'Nauja užduotis'), isHabit ? 'repeat' : 'list-todo')}
       <form class="px-5 sm:px-6 pb-6 space-y-6" novalidate>
-        <div class="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-well border border-line" role="tablist">
+        ${lockType ? '' : `<div class="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-well border border-line" role="tablist">
           <button type="button" data-type="habit" class="seg justify-center !h-11 !rounded-xl">${icon('repeat', 'w-4 h-4')} Įprotis</button>
           <button type="button" data-type="once" class="seg justify-center !h-11 !rounded-xl">${icon('circle-check', 'w-4 h-4')} Vienkartinė</button>
-        </div>
+        </div>`}
 
         <div>
           <label class="label" for="tf-title">Pavadinimas</label>
@@ -156,7 +159,7 @@ LU.screens.tasks = (() => {
 
         <div class="flex gap-3 pt-1">
           ${task ? `<button type="button" data-del class="btn-ghost !px-4 text-red-400" aria-label="Ištrinti">${icon('trash-2', 'w-5 h-5')}</button>` : ''}
-          <button type="submit" class="btn-gold flex-1">${icon('check', 'w-5 h-5', 2.5)} ${task ? 'Išsaugoti' : 'Sukurti'}</button>
+          <button type="submit" class="btn-gold flex-1">${icon('check', 'w-5 h-5', 2.5)} ${task ? (isHabit ? 'Išsaugoti įprotį' : 'Išsaugoti užduotį') : 'Sukurti'}</button>
         </div>
       </form>`;
 
@@ -218,7 +221,7 @@ LU.screens.tasks = (() => {
           if (daysErr) return;
           if (task) {
             S.updateTask(task.id, f);
-            toast('Užduotis atnaujinta', { icon: 'check' });
+            toast(f.type === 'habit' ? 'Įprotis atnaujintas' : 'Užduotis atnaujinta', { icon: 'check' });
           } else {
             S.addTask(f);
             toast(f.type === 'habit' ? 'Įprotis sukurtas' : 'Užduotis sukurta', { icon: 'plus' });
@@ -231,15 +234,15 @@ LU.screens.tasks = (() => {
 
   async function askDelete(task) {
     const ok = await confirm({
-      title: 'Ištrinti užduotį?',
-      text: `„<b class="text-white">${esc(task.title)}</b>" bus ištrinta. Jau uždirbtas XP liks.`,
+      title: task.type === 'habit' ? 'Ištrinti įprotį?' : 'Ištrinti užduotį?',
+      text: `„<b class="text-white">${esc(task.title)}</b>" bus ${task.type === 'habit' ? 'ištrintas' : 'ištrinta'}. Jau uždirbtas XP liks.`,
       confirmLabel: 'Ištrinti',
       danger: true,
       icon: 'trash-2',
     });
     if (ok) {
       S.deleteTask(task.id);
-      toast('Užduotis ištrinta', { icon: 'trash-2' });
+      toast(task.type === 'habit' ? 'Įprotis ištrintas' : 'Užduotis ištrinta', { icon: 'trash-2' });
     }
   }
 
