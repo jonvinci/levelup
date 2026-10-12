@@ -95,7 +95,6 @@ LU.screens.home = (() => {
     const hist = S.habitHistory(t, 7);
     const streak = S.habitStreak(t);
     const doneToday = hist[hist.length - 1].done;
-    const WD = LU.config.WEEKDAYS;
     const just = LU.app.justToggled === t.id;
     // Visa eilutė – mygtukas: paspaudus įprotis pažymimas atliktu šiandien (arba atšaukiamas)
     return `
@@ -105,13 +104,6 @@ LU.screens.home = (() => {
         <span class="block font-semibold truncate ${doneToday ? 'text-white/60' : ''}">${esc(t.title)}${t.note ? `<span class="font-normal text-muted"> – ${esc(t.note)}</span>` : ''}</span>
         <span class="mt-0.5 flex items-center gap-1 text-xs text-muted min-w-0">${icon(t.icon, 'w-3.5 h-3.5 shrink-0')}<span class="truncate">${scheduleText(t.days)} · ${LU.config.TASK_XP} XP</span></span>
       </span>
-      <div class="flex gap-[3px] sm:gap-1 items-end" aria-label="Paskutinės 7 dienos">
-        ${hist.map((h) => `
-          <span class="flex flex-col items-center gap-1" title="${WD[h.wd - 1].long}${h.scheduled ? (h.done ? ' – atlikta' : ' – neatlikta') : ' – nesuplanuota'}">
-            <span class="block w-[7px] sm:w-2 h-5 rounded-full ${h.done ? 'bg-gold' : h.scheduled ? (h.isToday ? 'bg-white/10 ring-1 ring-gold/60' : 'bg-white/10') : 'bg-transparent border border-white/10'}"></span>
-            <span class="text-[9px] leading-none ${h.isToday ? 'text-gold font-bold' : 'text-dim'}">${WD[h.wd - 1].short.charAt(0)}</span>
-          </span>`).join('')}
-      </div>
       <div class="w-9 sm:w-11 shrink-0 flex items-center justify-end gap-0.5 font-extrabold tabular-nums ${streak ? 'text-flame' : 'text-dim'}">
         ${icon('flame', 'w-4 h-4')}${streak}
       </div>
