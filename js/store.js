@@ -42,6 +42,7 @@ LU.store = (() => {
     return {
       version: 1, profile: null, tasks: [], completions: {}, xpLog: [], activeDays: [],
       achievements: {}, maxLevel: 1, friends: [], notifications: [], lastSeen: null,
+      settings: { sound: true },
     };
   }
 
@@ -51,6 +52,7 @@ LU.store = (() => {
     state = Object.assign(emptyState(), saved || {});
     // visos užduotys ir įpročiai duoda vienodai XP (C.TASK_XP)
     state.tasks.forEach((t) => { t.xp = C.TASK_XP; });
+    state.settings = Object.assign({ sound: true }, state.settings);
     ensureAutoHabit();
     return state;
   }

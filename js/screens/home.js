@@ -181,6 +181,7 @@ LU.screens.home = (() => {
   LU.actions.star = (el) => {
     const res = S.toggleImportant(el.dataset.id);
     if (!res) return;
+    LU.sound.play('star');
     LU.ui.toast(res.important ? 'Pažymėta kaip svarbi' : 'Nebežymima kaip svarbi', { icon: 'star', ms: 1600 });
     LU.app.afterChange(res);
   };

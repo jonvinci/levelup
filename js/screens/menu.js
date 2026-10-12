@@ -45,6 +45,7 @@ LU.screens.menu = (() => {
         { action: 'edit-profile', ic: 'user', title: 'Redaguoti profilį', sub: 'Vardas ir nuotrauka' },
         { action: 'edit-goals', ic: 'target', title: 'Mano tikslai' },
         { action: 'achievements', ic: 'trophy', title: 'Pasiekimai' },
+        { action: 'toggle-sound', ic: S.state.settings.sound === false ? 'bell' : 'music', title: 'Garsai', sub: S.state.settings.sound === false ? 'Išjungti – paspausk, kad įjungtum' : 'Įjungti – paspausk, kad išjungtum' },
       ])}
 
       ${section('Duomenys', [
@@ -179,6 +180,13 @@ LU.screens.menu = (() => {
         </div>
         <p class="text-sm text-muted">Įdiegta programėlė veikia ir be interneto. Duomenys lieka tavo telefone.</p>
       </div>`);
+  };
+
+  LU.actions['toggle-sound'] = () => {
+    S.state.settings.sound = S.state.settings.sound === false;
+    S.commit();
+    if (S.state.settings.sound) LU.sound.play('done');
+    toast(S.state.settings.sound ? 'Garsai įjungti' : 'Garsai išjungti', { icon: 'music' });
   };
 
   LU.actions.reset = async () => {

@@ -192,17 +192,19 @@ LU.app = (() => {
   function afterChange(res) {
     const auto = S.state.tasks.find(S.isAutoHabit);
     if (res.auto > 0 && auto) {
+      LU.sound.play('done', 250);
       setTimeout(() => LU.ui.toast(`Visos svarbios užduotys atliktos – „${auto.title}" įvykdytas! +${LU.config.TASK_XP} XP`, { icon: 'star', ms: 3200 }), 300);
     } else if (res.auto < 0 && auto) {
       LU.ui.toast(`„${auto.title}" atšauktas (-${LU.config.TASK_XP} XP)`, { icon: 'info' });
     }
     if (res.bonus > 0) {
+      LU.sound.play('bonus', 450);
       setTimeout(() => LU.ui.toast(`Visos misijos atliktos! +${res.bonus} XP premija`, { icon: 'sparkles', ms: 3200 }), 650);
     } else if (res.bonus < 0) {
       LU.ui.toast(`Premija nuimta (${res.bonus} XP)`, { icon: 'info' });
     }
-    res.achievements.forEach((a, i) => setTimeout(() => LU.ui.toast(`Naujas pasiekimas: ${a.name}`, { icon: a.icon, ms: 3500 }), 900 + i * 400));
-    if (res.levelUp) setTimeout(() => LU.ui.celebrateLevel(res.levelUp), 550);
+    res.achievements.forEach((a, i) => setTimeout(() => { LU.sound.play('achievement'); LU.ui.toast(`Naujas pasiekimas: ${a.name}`, { icon: a.icon, ms: 3500 }); }, 900 + i * 400));
+    if (res.levelUp) setTimeout(() => { LU.sound.play('levelup'); LU.ui.celebrateLevel(res.levelUp); }, 550);
   }
   app.afterChange = afterChange;
 
@@ -220,6 +222,7 @@ LU.app = (() => {
       return;
     }
     if (navigator.vibrate) navigator.vibrate(res.done ? 15 : 8);
+    LU.sound.play(res.done ? 'done' : 'undo');
     LU.ui.xpFloat(`${res.xp > 0 ? '+' : ''}${res.xp} XP`, anchor, res.xp < 0);
     afterChange(res);
   };
