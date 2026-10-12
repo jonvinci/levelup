@@ -24,6 +24,7 @@ LU.app = (() => {
   const screens = () => ({
     '': LU.screens.home,
     uzduotys: LU.screens.tasks,
+    iprociai: LU.screens.tasks,
     lygiai: LU.screens.levels,
     draugai: LU.screens.friends,
     meniu: LU.screens.menu,
@@ -84,7 +85,8 @@ LU.app = (() => {
 
   function shell(r, content) {
     const li = S.levelInfo();
-    const navActive = (x) => (x === r || (x === 'meniu' && r === 'profilis'));
+    const navActive = (x) => (x === r || (x === 'meniu' && r === 'profilis') || (x === 'uzduotys' && r === 'iprociai'));
+    const sideActive = (x) => (x === r || (x === 'uzduotys' && r === 'iprociai'));
     return `
     <!-- Mobilus viršus -->
     <header class="lg:hidden sticky top-0 z-30 bg-bg/90 backdrop-blur-md border-b border-line pt-[env(safe-area-inset-top)]">
@@ -122,7 +124,7 @@ LU.app = (() => {
 
     <!-- Kompiuterio šoninė juosta -->
     <aside class="hidden lg:flex fixed left-0 top-[76px] bottom-0 z-20 w-[104px] flex-col items-center gap-3 py-6 border-r border-line bg-bg">
-      ${NAV.map((n) => `<a href="#/${n.route}" class="side-item ${n.route === r ? 'active' : ''}" aria-label="${n.label}">${icon(n.icon, 'w-6 h-6')}<span class="tip">${n.label}</span></a>`).join('')}
+      ${NAV.map((n) => `<a href="#/${n.route}" class="side-item ${sideActive(n.route) ? 'active' : ''}" aria-label="${n.label}">${icon(n.icon, 'w-6 h-6')}<span class="tip">${n.label}</span></a>`).join('')}
       <span class="w-8 h-px bg-line2 my-2"></span>
       <a href="#/profilis" class="side-item ${r === 'profilis' ? 'active' : ''}" aria-label="Profilis">${icon('user', 'w-6 h-6')}<span class="tip">Profilis</span></a>
       <span class="mt-auto text-[10px] text-dim font-mono">v${LU.config.VERSION}</span>

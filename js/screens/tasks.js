@@ -52,9 +52,28 @@ LU.screens.tasks = (() => {
     </section>`;
   }
 
+  /** Tik įpročių valdymas (atidaromas paspaudus „Valdyti" prie „Mano įpročiai"). */
+  function renderHabits(habits) {
+    return `
+    <a href="#/" class="inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-white mb-4">${icon('chevron-left', 'w-4 h-4')} Pagrindinis</a>
+    <section class="flex items-end justify-between gap-4 mb-6 lg:mb-8">
+      <div>
+        <p class="eyebrow text-gold">Valdymas</p>
+        <h1 class="mt-2 text-[30px] sm:text-4xl lg:text-5xl font-black tracking-tight uppercase leading-none">Įpročiai</h1>
+      </div>
+      <button data-action="add-task" data-type="habit" class="btn-gold h-12 px-5 shrink-0">${icon('plus', 'w-5 h-5')}<span>Naujas</span></button>
+    </section>
+    <div class="max-w-3xl">
+      ${section('Mano įpročiai', 'repeat', habits, 'Įpročių dar nėra. Pridėk pasikartojančią užduotį ir sek savo seriją.', 'habit')}
+      <p class="mt-6 text-sm text-muted flex items-start gap-2">${icon('info', 'w-4 h-4 mt-0.5 shrink-0')} Paspausk įprotį, kad pakeistum pavadinimą, XP, ikoną ar savaitės dienas. Ištrynus įprotį, jau uždirbtas XP lieka.</p>
+      <a href="#/uzduotys" class="mt-5 inline-flex items-center gap-2 text-gold font-bold">Visos užduotys ${icon('arrow-right', 'w-5 h-5')}</a>
+    </div>`;
+  }
+
   function render() {
     const tasks = [...S.state.tasks].sort((a, b) => a.order - b.order);
     const habits = tasks.filter((t) => t.type === 'habit');
+    if (LU.app.route() === 'iprociai') return renderHabits(habits);
     const weekAgo = S.util.addDays(S.util.today(), -7);
     const once = tasks.filter((t) => t.type === 'once' && (!t.doneDate || t.doneDate >= weekAgo))
       .sort((a, b) => (!!a.doneDate - !!b.doneDate) || (a.date < b.date ? -1 : 1));
@@ -82,7 +101,7 @@ LU.screens.tasks = (() => {
     if (!C.XP_CHOICES.includes(f.xp)) f.custom = true;
 
     const html = `
-      ${modalHeader(task ? 'Redaguoti užduotį' : 'Nauja užduotis', 'list-todo')}
+      ${modalHeader(task ? (task.type === 'habit' ? 'Redaguoti įprotį' : 'Redaguoti užduotį') : (f.type === 'habit' && preset.type ? 'Naujas įprotis' : 'Nauja užduotis'), f.type === 'habit' ? 'repeat' : 'list-todo')}
       <form class="px-5 sm:px-6 pb-6 space-y-6" novalidate>
         <div class="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-well border border-line" role="tablist">
           <button type="button" data-type="habit" class="seg justify-center !h-11 !rounded-xl">${icon('repeat', 'w-4 h-4')} Įprotis</button>
@@ -137,7 +156,7 @@ LU.screens.tasks = (() => {
 
         <div class="flex gap-3 pt-1">
           ${task ? `<button type="button" data-del class="btn-ghost !px-4 text-red-400" aria-label="Ištrinti">${icon('trash-2', 'w-5 h-5')}</button>` : ''}
-          <button type="submit" class="btn-gold flex-1">${icon('check', 'w-5 h-5', 2.5)} ${task ? 'Išsaugoti' : 'Sukurti užduotį'}</button>
+          <button type="submit" class="btn-gold flex-1">${icon('check', 'w-5 h-5', 2.5)} ${task ? 'Išsaugoti' : 'Sukurti'}</button>
         </div>
       </form>`;
 
