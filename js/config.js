@@ -7,7 +7,7 @@ LU.screens = LU.screens || {};
 
 LU.config = {
   APP_NAME: 'LEVEL UP',
-  VERSION: '1.1.6',
+  VERSION: '1.1.7',
 
   // ---------------- XP KREIVĖ ----------------
   MAX_LEVEL: 50,
@@ -24,8 +24,8 @@ LU.config = {
   /** Premija, kai atliktos visos tos dienos misijos. */
   ALL_DONE_BONUS: 20,
 
-  /** XP pasirinkimai užduoties formoje. */
-  XP_CHOICES: [5, 10, 20, 30],
+  /** Kiek XP duoda kiekviena atlikta misija ir įprotis. */
+  TASK_XP: 5,
 
   // ---------------- TITULAI ----------------
   TITLES: [
@@ -84,10 +84,10 @@ LU.config = {
     'leaf', 'flower-2', 'heart', 'smile', 'timer', 'target', 'zap'],
 
   SEED_TASKS: [
-    { title: 'Šaltas dušas', note: '2 min', icon: 'snowflake', xp: 10 },
-    { title: 'Ryto meditacija', note: '10 min', icon: 'brain', xp: 10 },
-    { title: 'Treniruotė', note: '30 min', icon: 'dumbbell', xp: 20 },
-    { title: 'Knygos skaitymas', note: '20 min', icon: 'book-open', xp: 10 },
+    { title: 'Šaltas dušas', note: '2 min', icon: 'snowflake' },
+    { title: 'Ryto meditacija', note: '10 min', icon: 'brain' },
+    { title: 'Treniruotė', note: '30 min', icon: 'dumbbell' },
+    { title: 'Knygos skaitymas', note: '20 min', icon: 'book-open' },
   ],
 
   /** Savaitės dienos: 1 = pirmadienis ... 7 = sekmadienis. */

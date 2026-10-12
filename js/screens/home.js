@@ -61,7 +61,7 @@ LU.screens.home = (() => {
         <button data-action="star" data-id="${t.id}" class="shrink-0 -m-1.5 p-1.5 rounded-lg ${t.important ? 'text-gold' : 'text-white/30 hover:text-white/60'}" aria-pressed="${!!t.important}" aria-label="${t.important ? 'Nebežymėti kaip svarbios' : 'Pažymėti kaip svarbią'}">${star(t.important)}</button>
         ${d.done
           ? `<span class="shrink-0 inline-flex items-center gap-1 rounded-lg bg-gold/15 text-gold text-sm font-bold px-2 py-1 tabular-nums">${icon('check', 'w-3.5 h-3.5', 3)}${time(d.doneAt)}</span>`
-          : `<span class="shrink-0 rounded-lg border border-gold/25 text-gold/90 text-xs font-bold px-2 py-1 tabular-nums">+${t.xp} XP</span>`}
+          : `<span class="shrink-0 rounded-lg border border-gold/25 text-gold/90 text-xs font-bold px-2 py-1 tabular-nums">+${LU.config.TASK_XP} XP</span>`}
       </div>
     </li>`;
   }
@@ -103,7 +103,7 @@ LU.screens.home = (() => {
       <span class="chk w-8 h-8 rounded-full grid place-items-center shrink-0 ${doneToday ? 'bg-gold text-black' : 'border-2 border-white/20'}">${doneToday ? icon('check', 'w-4 h-4', 3) : ''}</span>
       <span class="flex-1 min-w-0">
         <span class="block font-semibold truncate ${doneToday ? 'text-white/60' : ''}">${esc(t.title)}${t.note ? `<span class="font-normal text-muted"> – ${esc(t.note)}</span>` : ''}</span>
-        <span class="mt-0.5 flex items-center gap-1 text-xs text-muted min-w-0">${icon(t.icon, 'w-3.5 h-3.5 shrink-0')}<span class="truncate">${scheduleText(t.days)} · ${t.xp} XP</span></span>
+        <span class="mt-0.5 flex items-center gap-1 text-xs text-muted min-w-0">${icon(t.icon, 'w-3.5 h-3.5 shrink-0')}<span class="truncate">${scheduleText(t.days)} · ${LU.config.TASK_XP} XP</span></span>
       </span>
       <div class="flex gap-[3px] sm:gap-1 items-end" aria-label="Paskutinės 7 dienos">
         ${hist.map((h) => `

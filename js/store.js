@@ -49,6 +49,8 @@ LU.store = (() => {
   async function load() {
     const saved = await LU.db.load();
     state = Object.assign(emptyState(), saved || {});
+    // visos užduotys ir įpročiai duoda vienodai XP (C.TASK_XP)
+    state.tasks.forEach((t) => { t.xp = C.TASK_XP; });
     return state;
   }
   /** Įrašo iš karto (be uždelsimo), kad nieko neprarastume telefonui uždarius programėlę. */
@@ -116,7 +118,7 @@ LU.store = (() => {
     const order = state.tasks.reduce((m, t) => Math.max(m, t.order), 0) + 1;
     const task = {
       id: uid(), title: data.title.trim(), note: (data.note || '').trim(), icon: data.icon || 'circle-check',
-      xp: Number(data.xp) || 10, type: data.type === 'once' ? 'once' : 'habit',
+      xp: C.TASK_XP, type: data.type === 'once' ? 'once' : 'habit',
       days: data.type === 'once' ? [] : (data.days && data.days.length ? data.days : [1, 2, 3, 4, 5, 6, 7]),
       date: data.type === 'once' ? (data.date || today()) : null, doneDate: null,
       createdKey: today(), createdAt: new Date().toISOString(), order,
@@ -136,15 +138,7 @@ LU.store = (() => {
     t.days = t.type === 'habit' ? (data.days && data.days.length ? data.days : [1, 2, 3, 4, 5, 6, 7]) : [];
     t.date = t.type === 'once' ? (data.date || t.date || today()) : null;
     if (t.type === 'habit') t.doneDate = null;
-    const newXp = Number(data.xp) || t.xp;
-    // jei užduotis šiandien jau atlikta – XP perskaičiuojamas pagal naują vertę
-    const c = (state.completions[today()] || {})[id];
-    if (c && newXp !== c.xp) {
-      c.xp = newXp;
-      const log = state.xpLog.find((l) => l.kind === 'task' && l.taskId === id && l.date === today());
-      if (log) log.amount = newXp;
-    }
-    t.xp = newXp;
+    t.xp = C.TASK_XP;
     syncBonus(today());
     commit();
   }
@@ -176,11 +170,11 @@ LU.store = (() => {
       if (task.type === 'once') task.doneDate = null;
     } else {
       const at = new Date().toISOString();
-      day[id] = { at, xp: task.xp };
-      state.xpLog.push({ id: uid(), at, date, amount: task.xp, kind: 'task', taskId: id, label: task.title, icon: task.icon });
+      day[id] = { at, xp: C.TASK_XP };
+      state.xpLog.push({ id: uid(), at, date, amount: C.TASK_XP, kind: 'task', taskId: id, label: task.title, icon: task.icon });
       if (task.type === 'once') task.doneDate = date;
       res.done = true;
-      res.xp = task.xp;
+      res.xp = C.TASK_XP;
     }
     res.bonus = syncBonus(date);
     touchDay();

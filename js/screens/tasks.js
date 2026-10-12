@@ -27,7 +27,7 @@ LU.screens.tasks = (() => {
         <p class="font-semibold truncate ${t.doneDate ? 'line-through' : ''}">${esc(t.title)}${t.note ? `<span class="text-muted font-normal"> – ${esc(t.note)}</span>` : ''}</p>
         <p class="text-xs text-muted mt-1 flex items-center gap-2 flex-wrap">
           <span class="${t.type === 'once' && !t.doneDate && t.date < today ? 'text-flame' : ''}">${meta}</span>
-          <span class="text-gold font-bold">+${t.xp} XP</span>
+          <span class="text-gold font-bold">+${C.TASK_XP} XP</span>
           ${status}
         </p>
       </button>
@@ -81,41 +81,26 @@ LU.screens.tasks = (() => {
     const today = S.util.today();
     const f = task
       ? { ...task, days: [...task.days], date: task.date || today }
-      : { title: '', note: '', icon: 'target', xp: 10, type: preset.type || 'once', days: [1, 2, 3, 4, 5, 6, 7], date: today };
-    if (!C.XP_CHOICES.includes(f.xp)) f.custom = true;
-    // Redaguojant ar kuriant iš „Įpročiai" puslapio tipas nekeičiamas – įprotis lieka įpročiu
-    // Tipas nustatomas pagal vietą, iš kur kuriama (misijos/užduotys – vienkartinė, įpročiai – įprotis)
-    const lockType = true;
+      : { title: '', note: '', icon: 'target', type: preset.type || 'once', days: [1, 2, 3, 4, 5, 6, 7], date: today };
+    // Tipas nustatomas pagal vietą, iš kur kuriama (misijos/užduotys – vienkartinė, įpročiai – įprotis).
+    // Užduočiai – tik tekstas; įpročiui – dar trukmė, savaitės dienos ir ikona. XP visada vienodas (C.TASK_XP).
     const isHabit = f.type === 'habit';
 
     const html = `
       ${modalHeader(task ? (isHabit ? 'Redaguoti įprotį' : 'Redaguoti užduotį') : (isHabit ? 'Naujas įprotis' : 'Nauja užduotis'), isHabit ? 'repeat' : 'list-todo')}
       <form class="px-5 sm:px-6 pb-6 space-y-6" novalidate>
-        ${lockType ? '' : `<div class="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-well border border-line" role="tablist">
-          <button type="button" data-type="habit" class="seg justify-center !h-11 !rounded-xl">${icon('repeat', 'w-4 h-4')} Įprotis</button>
-          <button type="button" data-type="once" class="seg justify-center !h-11 !rounded-xl">${icon('circle-check', 'w-4 h-4')} Vienkartinė</button>
-        </div>`}
-
         <div>
-          <label class="label" for="tf-title">Pavadinimas</label>
-          <input id="tf-title" name="title" class="field" maxlength="60" placeholder="pvz. Ryto bėgimas" value="${esc(f.title)}" autofocus>
+          <label class="${isHabit ? 'label' : 'sr-only'}" for="tf-title">Pavadinimas</label>
+          <input id="tf-title" name="title" class="field" maxlength="80" placeholder="${isHabit ? 'pvz. Ryto bėgimas' : 'Ką reikia padaryti?'}" value="${esc(f.title)}" autofocus enterkeyhint="done">
           <p data-err class="hidden mt-2 text-sm text-red-400">Įrašyk pavadinimą.</p>
         </div>
-
+        ${isHabit ? `
         <div>
           <label class="label" for="tf-note">Trukmė / pastaba <span class="normal-case tracking-normal font-medium text-dim">(nebūtina)</span></label>
           <input id="tf-note" name="note" class="field" maxlength="30" placeholder="pvz. 10 min" value="${esc(f.note)}">
         </div>
 
         <div>
-          <span class="label">XP vertė</span>
-          <div class="grid grid-cols-5 gap-2" data-xp>
-            ${C.XP_CHOICES.map((x) => `<button type="button" data-xp-val="${x}" class="xp-opt h-12 rounded-2xl border font-extrabold tabular-nums transition">${x}</button>`).join('')}
-            <input type="number" min="1" max="500" inputmode="numeric" data-xp-custom class="field !h-12 !px-1 text-center font-extrabold placeholder:text-sm placeholder:font-semibold" placeholder="Kita" value="${f.custom ? f.xp : ''}">
-          </div>
-        </div>
-
-        <div data-days-wrap>
           <div class="flex items-center justify-between mb-2">
             <span class="label !mb-0">Savaitės dienos</span>
             <div class="flex gap-1.5 text-xs font-bold">
@@ -130,21 +115,16 @@ LU.screens.tasks = (() => {
           <p data-days-err class="hidden mt-2 text-sm text-red-400">Pasirink bent vieną dieną.</p>
         </div>
 
-        <div data-date-wrap>
-          <label class="label" for="tf-date">Data</label>
-          <input id="tf-date" type="date" class="field" value="${f.date}" min="${today}">
-        </div>
-
         <div>
           <span class="label">Ikona</span>
           <div class="grid grid-cols-7 sm:grid-cols-8 gap-1.5 max-h-[188px] overflow-y-auto pr-1 no-scrollbar" data-icons>
             ${C.TASK_ICONS.map((n) => `<button type="button" data-icon="${n}" aria-label="${n}" class="icon-opt aspect-square rounded-xl border grid place-items-center transition">${icon(n, 'w-5 h-5')}</button>`).join('')}
           </div>
-        </div>
+        </div>` : ''}
 
         <div class="flex gap-3 pt-1">
           ${task ? `<button type="button" data-del class="btn-ghost !px-4 text-red-400" aria-label="Ištrinti">${icon('trash-2', 'w-5 h-5')}</button>` : ''}
-          <button type="submit" class="btn-gold flex-1">${icon('check', 'w-5 h-5', 2.5)} ${task ? (isHabit ? 'Išsaugoti įprotį' : 'Išsaugoti užduotį') : 'Sukurti'}</button>
+          <button type="submit" class="btn-gold flex-1">${icon('check', 'w-5 h-5', 2.5)} ${task ? 'Išsaugoti' : (isHabit ? 'Sukurti' : 'Pridėti')}</button>
         </div>
       </form>`;
 
@@ -156,11 +136,6 @@ LU.screens.tasks = (() => {
         const setCls = (b, active) => { b.className = b.className.replace(/\b(bg-gold\/15|border-gold\/60|text-gold|bg-well|border-line|text-white\/70)\b/g, '').trim() + ' ' + (active ? on : off); };
 
         function paint() {
-          el.querySelectorAll('[data-type]').forEach((b) => b.classList.toggle('active', b.dataset.type === f.type));
-          el.querySelector('[data-days-wrap]').classList.toggle('hidden', f.type !== 'habit');
-          el.querySelector('[data-date-wrap]').classList.toggle('hidden', f.type !== 'once');
-          el.querySelectorAll('[data-xp-val]').forEach((b) => setCls(b, !f.custom && Number(b.dataset.xpVal) === f.xp));
-          el.querySelector('[data-xp-custom]').classList.toggle('!border-gold/60', !!f.custom);
           el.querySelectorAll('[data-day]').forEach((b) => setCls(b, f.days.includes(Number(b.dataset.day))));
           el.querySelectorAll('[data-icon]').forEach((b) => setCls(b, b.dataset.icon === f.icon));
         }
@@ -168,14 +143,14 @@ LU.screens.tasks = (() => {
         // pažymėtą ikoną parodom sąraše, neslinkdami viso modalo
         const sel = el.querySelector(`[data-icon="${f.icon}"]`);
         const grid = el.querySelector('[data-icons]');
-        if (sel && task) grid.scrollTop = sel.offsetTop - grid.offsetTop - 6;
+        if (sel && grid && task) grid.scrollTop = sel.offsetTop - grid.offsetTop - 6;
+        // užduočiai – iškart rašymui (ir telefone)
+        if (!isHabit) setTimeout(() => el.querySelector('#tf-title').focus(), 80);
 
         el.addEventListener('click', (e) => {
           const b = e.target.closest('button');
           if (!b) return;
-          if (b.dataset.type && b.closest('[role=tablist]')) f.type = b.dataset.type;
-          else if (b.dataset.xpVal) { f.xp = Number(b.dataset.xpVal); f.custom = false; el.querySelector('[data-xp-custom]').value = ''; }
-          else if (b.dataset.day) {
+          if (b.dataset.day) {
             const n = Number(b.dataset.day);
             f.days = f.days.includes(n) ? f.days.filter((x) => x !== n) : [...f.days, n].sort();
           } else if (b.dataset.preset) f.days = b.dataset.preset.split(',').map(Number);
@@ -187,29 +162,25 @@ LU.screens.tasks = (() => {
           } else return;
           paint();
         });
-        el.querySelector('[data-xp-custom]').addEventListener('input', (e) => {
-          const v = parseInt(e.target.value, 10);
-          if (v > 0) { f.xp = Math.min(500, v); f.custom = true; } else { f.custom = false; f.xp = 10; }
-          paint();
-        });
 
         form.addEventListener('submit', (e) => {
           e.preventDefault();
           f.title = el.querySelector('#tf-title').value.trim();
-          f.note = el.querySelector('#tf-note').value.trim();
-          f.date = el.querySelector('#tf-date').value || today;
+          const note = el.querySelector('#tf-note');
+          if (note) f.note = note.value.trim();
           const titleErr = !f.title;
-          const daysErr = f.type === 'habit' && !f.days.length;
+          const daysErr = isHabit && !f.days.length;
           el.querySelector('[data-err]').classList.toggle('hidden', !titleErr);
-          el.querySelector('[data-days-err]').classList.toggle('hidden', !daysErr);
+          const de = el.querySelector('[data-days-err]');
+          if (de) de.classList.toggle('hidden', !daysErr);
           if (titleErr) { el.querySelector('#tf-title').focus(); return; }
           if (daysErr) return;
           if (task) {
             S.updateTask(task.id, f);
-            toast(f.type === 'habit' ? 'Įprotis atnaujintas' : 'Užduotis atnaujinta', { icon: 'check' });
+            toast(isHabit ? 'Įprotis atnaujintas' : 'Užduotis atnaujinta', { icon: 'check' });
           } else {
             S.addTask(f);
-            toast(f.type === 'habit' ? 'Įprotis sukurtas' : 'Užduotis sukurta', { icon: 'plus' });
+            toast(isHabit ? 'Įprotis sukurtas' : 'Užduotis pridėta', { icon: 'plus' });
           }
           close();
         });
