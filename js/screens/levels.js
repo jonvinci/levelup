@@ -6,7 +6,6 @@ LU.screens.levels = (() => {
   const { icon, esc, fmt, ring, time, dayLabel, modal, modalHeader } = LU.ui;
   const S = LU.store;
   const C = LU.config;
-  const PER_ROW = 5;
 
   const view = { tab: 'path', selected: null, historyLimit: 60 };
   const isDesktop = () => window.matchMedia('(min-width: 1024px)').matches;
@@ -58,19 +57,22 @@ LU.screens.levels = (() => {
   }
 
   // ---------- Takas ----------
-  function pos(level) {
+  /** Mazgo vieta gyvatėlėje: eilės kryptis keičiasi kas eilę. perRow – mazgų eilėje. */
+  function pos(level, perRow) {
     const idx = level - 1;
-    const row = Math.floor(idx / PER_ROW);
-    const p = idx % PER_ROW;
-    const col = row % 2 === 0 ? p : PER_ROW - 1 - p;
-    return { row, col, x: ((col + 0.5) / PER_ROW) * 100 };
+    const row = Math.floor(idx / perRow);
+    const p = idx % perRow;
+    const col = row % 2 === 0 ? p : perRow - 1 - p;
+    return { row, col, x: ((col + 0.5) / perRow) * 100 };
   }
 
   /** Takas pieštas dviem dydžiais: telefonui (sm) ir kompiuteriui (lg). */
   function path(li, size) {
     const M = size === 'lg'
-      ? { rowH: 168, top: 56, node: 58, cur: 88, seg: 10, num: 'w-6 h-6 text-[11px]', ico: 'w-6 h-6', icoCur: 'w-9 h-9', lbl: 'text-xs', gap: 10 }
-      : { rowH: 116, top: 44, node: 42, cur: 60, seg: 7, num: 'w-[18px] h-[18px] text-[9px]', ico: 'w-[18px] h-[18px]', icoCur: 'w-7 h-7', lbl: 'text-[9px]', gap: 6 };
+      ? { perRow: 5, rowH: 168, top: 56, node: 58, cur: 88, seg: 10, num: 'w-6 h-6 text-[11px]', ico: 'w-6 h-6', icoCur: 'w-9 h-9', lbl: 'text-xs', gap: 10 }
+      // telefone – 3 per eilę ir stambesni mazgai, kad takas būtų „priartintas"
+      : { perRow: 3, rowH: 150, top: 56, node: 66, cur: 92, seg: 10, num: 'w-7 h-7 text-xs', ico: 'w-7 h-7', icoCur: 'w-10 h-10', lbl: 'text-[13px]', gap: 10 };
+    const PER_ROW = M.perRow;
     const rows = Math.ceil(C.MAX_LEVEL / PER_ROW);
     const height = M.top + (rows - 1) * M.rowH + 70;
     const y = (row) => M.top + row * M.rowH;
@@ -79,8 +81,8 @@ LU.screens.levels = (() => {
     let nodes = '';
 
     for (let L = 1; L < C.MAX_LEVEL; L++) {
-      const a = pos(L);
-      const b = pos(L + 1);
+      const a = pos(L, PER_ROW);
+      const b = pos(L + 1, PER_ROW);
       // užpildymas: pasiekta – 100 %, nuo dabartinio iki kito – pagal XP progresą
       const fill = L + 1 <= cur ? 1 : L === cur ? li.pct / 100 : 0;
       if (a.row === b.row) {
@@ -101,7 +103,7 @@ LU.screens.levels = (() => {
     }
 
     for (let L = 1; L <= C.MAX_LEVEL; L++) {
-      const p = pos(L);
+      const p = pos(L, PER_ROW);
       const state = L < cur ? 'reached' : L === cur ? 'current' : 'future';
       const sz = state === 'current' ? M.cur : M.node;
       const title = S.titleFor(L).name;
@@ -111,7 +113,7 @@ LU.screens.levels = (() => {
           ${icon(S.levelIcon(L), state === 'current' ? M.icoCur : M.ico, state === 'future' ? 1.75 : 2.1)}
           <span class="absolute -top-0.5 -left-0.5 ${M.num} rounded-full grid place-items-center font-black bg-black ${state === 'future' ? 'text-white/80 border border-white/15' : 'text-white border border-gold/70'}">${L}</span>
         </button>
-        <div class="absolute pointer-events-none flex flex-col items-center gap-1" style="left:${p.x}%;top:${y(p.row) + sz / 2 + M.gap}px;transform:translateX(-50%);max-width:19.5%">
+        <div class="absolute pointer-events-none flex flex-col items-center gap-1" style="left:${p.x}%;top:${y(p.row) + sz / 2 + M.gap}px;transform:translateX(-50%);max-width:${100 / PER_ROW - 1}%">
           <span class="${M.lbl} max-w-full truncate font-bold rounded-md px-1.5 py-0.5 bg-black/80 ${state === 'future' ? 'text-white/55' : 'text-white'}">${esc(title)}</span>
           ${state === 'current' ? `<span class="pill-gold !text-[9px] !px-2">DABAR</span>` : ''}
         </div>`;
