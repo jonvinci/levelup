@@ -3,7 +3,7 @@ window.LU = window.LU || {};
 LU.screens = LU.screens || {};
 
 LU.screens.home = (() => {
-  const { icon, esc, fmt, time, ring, scheduleText, dayLabel } = LU.ui;
+  const { icon, esc, fmt, ring, scheduleText, dayLabel } = LU.ui;
   const S = LU.store;
 
   function levelCard(st) {
@@ -59,9 +59,6 @@ LU.screens.home = (() => {
           ${d.carried ? `<span class="block text-xs text-flame mt-0.5">Perkelta iš ${dayLabel(t.date).toLowerCase()}</span>` : ''}
         </span>
         <button data-action="star" data-id="${t.id}" class="shrink-0 -m-1.5 p-1.5 rounded-lg ${t.important ? 'text-gold' : 'text-white/30 hover:text-white/60'}" aria-pressed="${!!t.important}" aria-label="${t.important ? 'Nebežymėti kaip svarbios' : 'Pažymėti kaip svarbią'}">${star(t.important)}</button>
-        ${d.done
-          ? `<span class="shrink-0 inline-flex items-center gap-1 rounded-lg bg-gold/15 text-gold text-sm font-bold px-2 py-1 tabular-nums">${icon('check', 'w-3.5 h-3.5', 3)}${time(d.doneAt)}</span>`
-          : `<span class="shrink-0 rounded-lg border border-gold/25 text-gold/90 text-xs font-bold px-2 py-1 tabular-nums">+${LU.config.TASK_XP} XP</span>`}
       </div>
     </li>`;
   }
