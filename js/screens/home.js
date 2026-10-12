@@ -66,17 +66,12 @@ LU.screens.home = (() => {
     const all = S.dueTasks();
     const due = all.filter((d) => d.task.type === 'once');
     const done = all.filter((d) => d.done).length;
-    const pct = all.length ? Math.round((done / all.length) * 100) : 0;
     const allDone = all.length && done === all.length;
     return `
     <section class="card card-pad">
       <div class="flex items-center gap-3">
         <div class="icon-box w-11 h-11 sm:w-12 sm:h-12 ${allDone ? 'text-gold' : 'text-flame'}">${icon('flame', 'w-6 h-6')}</div>
         <h2 class="flex-1 min-w-0 text-[19px] sm:text-2xl font-extrabold leading-tight">Šiandienos misijos</h2>
-        <div class="text-right whitespace-nowrap tabular-nums">
-          <span class="text-white/60 font-semibold">${done} / ${all.length}</span>
-          <span class="ml-2 text-gold font-extrabold">${pct} %</span>
-        </div>
       </div>
       ${allDone ? `<p class="mt-4 text-gold font-semibold flex items-center gap-2">Visos užduotys atliktos. Šaunuolis! <span class="pill-outline text-[10px] py-0.5">+${LU.config.ALL_DONE_BONUS} XP</span></p>` : ''}
       ${due.length ? `<ul class="mt-4 space-y-2.5">${due.map(missionRow).join('')}</ul>` : `
