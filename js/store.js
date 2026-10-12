@@ -254,10 +254,20 @@ LU.store = (() => {
     return finishChange({ important: t.important, xp: 0, bonus: 0, auto: 0, levelUp: null, achievements: [] }, today(), before);
   }
 
+  /**
+   * Dienos misijos, kurias reikia atlikti premijai gauti.
+   * Automatinis „svarbių užduočių" įprotis privalomas tik tą dieną, kai yra svarbių užduočių.
+   */
+  function requiredDue(date = today()) {
+    const all = dueTasks(date);
+    const hasImportant = all.some((d) => d.task.type === 'once' && d.task.important);
+    return all.filter((d) => hasImportant || !isAutoHabit(d.task));
+  }
+
   /** Užtikrina, kad „visos misijos atliktos" premija atitiktų dabartinę būseną. Grąžina XP pokytį. */
   function syncBonus(date) {
     syncAutoHabit(date);
-    const due = dueTasks(date);
+    const due = requiredDue(date);
     const allDone = due.length > 0 && due.every((d) => d.done);
     const idx = state.xpLog.findIndex((l) => l.kind === 'bonus' && l.date === date);
     if (allDone && idx === -1) {
@@ -496,7 +506,7 @@ LU.store = (() => {
     get state() { return state; },
     load, save, flush, commit, subscribe,
     createProfile, updateProfile, touchDay,
-    dueTasks, addTask, updateTask, deleteTask, toggleTask, toggleImportant, syncBonus, isAutoHabit,
+    dueTasks, addTask, updateTask, deleteTask, toggleTask, toggleImportant, syncBonus, isAutoHabit, requiredDue,
     totalXp, levelInfo, levelStartXp, titleFor, levelIcon, stats,
     habitHistory, habitStreak, checkAchievements,
     unreadCount, markAllRead,

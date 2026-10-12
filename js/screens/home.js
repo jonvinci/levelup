@@ -85,7 +85,7 @@ LU.screens.home = (() => {
   function missions() {
     // Dienos pažanga ir premija skaičiuojamos iš visko (užduotys + šiandienos įpročiai),
     // bet sąraše rodomos tik vienkartinės užduotys – įpročiai yra „Mano įpročiai" kortelėje.
-    const all = S.dueTasks();
+    const all = S.requiredDue();
     // svarbios (su žvaigždute) – viršuje, kitaip išlaikoma įprasta tvarka
     const due = all.filter((d) => d.task.type === 'once').sort((a, b) => !!b.task.important - !!a.task.important);
     const done = all.filter((d) => d.done).length;
