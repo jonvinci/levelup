@@ -3,7 +3,7 @@ window.LU = window.LU || {};
 LU.actions = LU.actions || {};
 
 LU.app = (() => {
-  const { icon, esc, fmt, avatar, ring } = LU.ui;
+  const { icon, esc, fmt, avatar } = LU.ui;
   const S = LU.store;
 
   const NAV = [
@@ -36,48 +36,37 @@ LU.app = (() => {
   function logo(size = 'md') {
     const words = LU.config.APP_NAME.split(' ');
     const last = words.pop();
-    const big = size === 'lg' ? 'text-4xl' : 'text-[22px] lg:text-[26px]';
-    return `<a href="#/" class="inline-flex flex-col leading-none select-none" aria-label="${esc(LU.config.APP_NAME)}">
-      <span class="${big} font-black tracking-tight">${esc(words.join(' '))}${words.length ? ' ' : ''}<span class="text-gold">${esc(last)}</span></span>
-      <span class="mt-1 ${size === 'lg' ? 'text-[11px]' : 'text-[8px] lg:text-[9px]'} font-bold tracking-[0.42em] text-gold">ĮPROČIŲ ŽAIDIMAS</span>
-    </a>`;
+    return `<a href="#/" class="${size === 'lg' ? 'text-3xl' : 'text-lg'} font-bold tracking-tight select-none" aria-label="${esc(LU.config.APP_NAME)}">${esc(words.join(' '))}${words.length ? ' ' : ''}<span class="text-gold">${esc(last)}</span></a>`;
   }
 
-  function avatarBadge(li, size = 44) {
-    const p = S.state.profile;
+  /** Avataras su mažu lygio skaičiumi kampe. */
+  function avatarBadge(li, size = 36) {
     return `<span class="relative block shrink-0" style="width:${size}px;height:${size}px">
-      ${ring(li.pct, size, 3)}
-      <span class="absolute inset-[4px]">${avatar(p, 'w-full h-full text-xs')}</span>
-      <span class="absolute -bottom-1 -right-1 min-w-[20px] h-5 px-1 rounded-full bg-gold text-black text-[10px] font-black grid place-items-center ring-2 ring-bg">${li.level}</span>
+      ${avatar(S.state.profile, 'w-full h-full text-xs')}
+      <span class="absolute -bottom-1 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-gold text-black text-[10px] font-bold grid place-items-center ring-2 ring-bg tabular-nums">${li.level}</span>
     </span>`;
   }
 
   function bellButton() {
     const n = S.unreadCount();
-    return `<button data-action="bell" class="relative grid place-items-center w-10 h-10 rounded-xl text-white/80 hover:text-white" aria-label="Pranešimai">
-      ${icon('bell', 'w-[22px] h-[22px]')}
-      ${n ? `<span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-gold ring-2 ring-bg"></span>` : ''}
+    return `<button data-action="bell" class="icon-btn relative !w-10 !h-10" aria-label="Pranešimai">
+      ${icon('bell', 'w-5 h-5', 1.75)}
+      ${n ? '<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-gold"></span>' : ''}
     </button>`;
   }
 
   function bellPanel() {
     if (!app.bellOpen) return '';
     const list = S.state.notifications;
-    return `<div data-bell-panel class="fade-in fixed z-40 right-3 top-[68px] lg:right-8 lg:top-[80px] w-[min(380px,calc(100vw-24px))] card p-2 shadow-2xl">
-      <div class="flex items-center justify-between px-3 pt-2 pb-3">
-        <h3 class="font-extrabold">Pranešimai</h3>
-        <span class="text-xs text-muted">${list.length ? `${list.length}` : ''}</span>
-      </div>
-      <div class="max-h-[60vh] overflow-y-auto">
+    return `<div data-bell-panel class="fade-in fixed z-40 right-3 top-[60px] lg:right-8 lg:top-[68px] w-[min(360px,calc(100vw-24px))] card shadow-2xl">
+      <h3 class="px-4 pt-4 pb-2 text-sm font-semibold">Pranešimai</h3>
+      <div class="max-h-[60vh] overflow-y-auto divide-y divide-line">
         ${list.length ? list.map((n) => `
-          <div class="flex gap-3 rounded-2xl px-3 py-3 ${n.read ? '' : 'bg-gold/[0.06]'}">
-            <div class="icon-box-gold w-10 h-10">${icon(n.icon, 'w-5 h-5')}</div>
-            <div class="min-w-0">
-              <p class="font-bold text-sm">${esc(n.title)}</p>
-              <p class="text-sm text-muted">${esc(n.text)}</p>
-              <p class="text-xs text-dim mt-1">${LU.ui.ago(n.at)}</p>
-            </div>
-          </div>`).join('') : `<p class="px-3 pb-4 text-sm text-muted">Kol kas tylu. Atlik užduotį ir pasiek naują lygį – pranešimai atsiras čia.</p>`}
+          <div class="px-4 py-3 ${n.read ? '' : 'bg-white/[0.03]'}">
+            <p class="text-sm font-medium">${esc(n.title)}</p>
+            <p class="text-sm text-muted">${esc(n.text)}</p>
+            <p class="text-xs text-dim mt-1">${LU.ui.ago(n.at)}</p>
+          </div>`).join('') : '<p class="px-4 pb-4 text-sm text-muted">Pranešimų nėra.</p>'}
       </div>
     </div>`;
   }
@@ -88,57 +77,50 @@ LU.app = (() => {
     const sideActive = (x) => x === r;
     return `
     <!-- Mobilus viršus -->
-    <header class="lg:hidden sticky top-0 z-30 bg-bg/90 backdrop-blur-md border-b border-line pt-[env(safe-area-inset-top)]">
-      <div class="h-16 px-4 flex items-center justify-between">
+    <header class="lg:hidden sticky top-0 z-30 bg-bg/95 backdrop-blur pt-[env(safe-area-inset-top)]">
+      <div class="h-14 px-4 flex items-center justify-between">
         ${logo()}
-        <div class="flex items-center gap-1.5">
-          <a href="#/lygiai" class="flex items-center gap-1 px-2 text-gold font-extrabold">${icon('zap', 'w-5 h-5')}<span>${fmt(li.xp)}</span><span class="text-xs text-gold/70 font-bold">XP</span></a>
+        <div class="flex items-center gap-2">
           ${bellButton()}
-          <a href="#/profilis" class="ml-1" aria-label="Profilis">${avatarBadge(li, 44)}</a>
+          <a href="#/profilis" aria-label="Profilis">${avatarBadge(li, 32)}</a>
         </div>
       </div>
     </header>
 
     <!-- Kompiuterio viršus -->
-    <header class="hidden lg:flex fixed top-0 inset-x-0 z-30 h-[76px] items-center justify-between px-8 bg-bg/90 backdrop-blur-md border-b border-line">
+    <header class="hidden lg:flex fixed top-0 inset-x-0 z-30 h-16 items-center justify-between px-8 bg-bg/95 backdrop-blur border-b border-line">
       ${logo()}
-      <div class="flex items-center gap-6">
-        <a href="#/profilis" class="flex items-center gap-4 group">
-          ${avatarBadge(li, 48)}
-          <span class="w-64">
-            <span class="flex items-center justify-between text-xs font-extrabold tracking-[0.15em]">
-              <span class="text-gold">LYGIS ${li.level}</span>
-              <span class="text-white/80 tracking-normal">${fmt(li.xp)} XP</span>
-            </span>
-            <span class="bar block mt-2 h-2"><i style="width:${li.pct}%"></i></span>
+      <div class="flex items-center gap-5">
+        <a href="#/lygiai" class="w-48">
+          <span class="flex items-center justify-between text-xs text-muted">
+            <span>Lygis ${li.level}</span><span class="tabular-nums">${fmt(li.xp)} XP</span>
           </span>
+          <span class="bar block mt-1.5 !h-1"><i style="width:${li.pct}%"></i></span>
         </a>
-        <span class="w-px h-9 bg-line2"></span>
-        <div class="flex items-center gap-2">
-          <a href="#/meniu" class="grid place-items-center w-10 h-10 rounded-xl text-white/80 hover:text-white" aria-label="Nustatymai">${icon('settings', 'w-[22px] h-[22px]')}</a>
+        <div class="flex items-center gap-1">
           ${bellButton()}
+          <a href="#/meniu" class="icon-btn !w-10 !h-10" aria-label="Nustatymai">${icon('settings', 'w-5 h-5', 1.75)}</a>
         </div>
+        <a href="#/profilis" aria-label="Profilis">${avatarBadge(li, 34)}</a>
       </div>
     </header>
 
     <!-- Kompiuterio šoninė juosta -->
-    <aside class="hidden lg:flex fixed left-0 top-[76px] bottom-0 z-20 w-[104px] flex-col items-center gap-3 py-6 border-r border-line bg-bg">
-      ${NAV.map((n) => `<a href="#/${n.route}" class="side-item ${sideActive(n.route) ? 'active' : ''}" aria-label="${n.label}">${icon(n.icon, 'w-6 h-6')}<span class="tip">${n.label}</span></a>`).join('')}
-      <span class="w-8 h-px bg-line2 my-2"></span>
-      <a href="#/profilis" class="side-item ${r === 'profilis' ? 'active' : ''}" aria-label="Profilis">${icon('user', 'w-6 h-6')}<span class="tip">Profilis</span></a>
-      <span class="mt-auto text-[10px] text-dim font-mono">v${LU.config.VERSION}</span>
+    <aside class="hidden lg:flex fixed left-0 top-16 bottom-0 z-20 w-20 flex-col items-center gap-2 py-5 border-r border-line bg-bg">
+      ${NAV.map((n) => `<a href="#/${n.route}" class="side-item ${sideActive(n.route) ? 'active' : ''}" aria-label="${n.label}">${icon(n.icon, 'w-[22px] h-[22px]', 1.75)}<span class="tip">${n.label}</span></a>`).join('')}
+      <a href="#/profilis" class="side-item ${r === 'profilis' ? 'active' : ''}" aria-label="Profilis">${icon('user', 'w-[22px] h-[22px]', 1.75)}<span class="tip">Profilis</span></a>
     </aside>
 
-    <main id="view" class="lg:pl-[104px] lg:pt-[76px] pb-[calc(96px+env(safe-area-inset-bottom))] lg:pb-12">
-      <div class="${app.lastRoute !== r ? 'fade-in' : ''} mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 py-5 sm:py-7 lg:py-9">
+    <main id="view" class="lg:pl-20 lg:pt-16 pb-[calc(84px+env(safe-area-inset-bottom))] lg:pb-12">
+      <div class="${app.lastRoute !== r ? 'fade-in' : ''} mx-auto max-w-5xl px-4 sm:px-6 lg:px-10 pt-2 pb-6 sm:py-6 lg:py-10">
         ${content}
       </div>
     </main>
 
     <!-- Mobili apatinė navigacija -->
-    <nav class="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-bg/95 backdrop-blur-md border-t border-line pb-[env(safe-area-inset-bottom)]">
-      <div class="grid grid-cols-5 px-1 pt-2 pb-2">
-        ${NAV.map((n) => `<a href="#/${n.route}" class="nav-item ${navActive(n.route) ? 'active' : ''}"><span class="nav-ico">${icon(n.icon, 'w-6 h-6')}</span>${n.label}</a>`).join('')}
+    <nav class="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-bg/95 backdrop-blur border-t border-line pb-[env(safe-area-inset-bottom)]">
+      <div class="grid grid-cols-5 pt-1.5 pb-1.5">
+        ${NAV.map((n) => `<a href="#/${n.route}" class="nav-item ${navActive(n.route) ? 'active' : ''}">${icon(n.icon, 'w-[22px] h-[22px]', navActive(n.route) ? 2 : 1.75)}${n.label}</a>`).join('')}
       </div>
     </nav>
     ${bellPanel()}`;

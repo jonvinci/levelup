@@ -3,137 +3,108 @@ window.LU = window.LU || {};
 LU.screens = LU.screens || {};
 
 LU.screens.profile = (() => {
-  const { icon, esc, fmt, avatar, modal, modalHeader, toast, plural, monthYear } = LU.ui;
+  const { icon, esc, fmt, avatar, modal, modalHeader, toast, monthYear } = LU.ui;
   const S = LU.store;
   const C = LU.config;
   const TAG_SUGGESTIONS = ['Sveikata', 'Sportas', 'Verslas', 'Karjera', 'Mokslas', 'Finansai', 'Šeima', 'Kūryba', 'Ramybė', 'Kalbos'];
 
-  function statTile(iconHtml, value, label, href) {
-    return `
-    <a ${href ? `href="${href}"` : ''} class="tile p-4 sm:p-5 flex items-start gap-3 sm:gap-4 ${href ? 'hover:border-line2 transition' : ''}">
-      ${iconHtml}
-      <div class="flex-1 min-w-0">
-        <div class="text-2xl sm:text-[28px] font-black leading-none tabular-nums">${value}</div>
-        <div class="mt-2 text-sm text-white/70 leading-snug">${label}</div>
-      </div>
-      ${href ? `<span class="hidden sm:block text-white/40 self-center">${icon('chevron-right', 'w-4 h-4')}</span>` : ''}
-    </a>`;
-  }
-
   function hero(st) {
     const p = S.state.profile;
     const li = st.levelInfo;
+    const cell = (value, label) => `
+      <div class="px-1 text-center">
+        <div class="text-xl font-semibold tabular-nums leading-none">${value}</div>
+        <div class="mt-1.5 text-xs text-muted">${label}</div>
+      </div>`;
     return `
-    <section class="card card-pad lg:p-10">
-      <div class="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-0">
-        <div class="flex items-center gap-5 lg:w-[46%] lg:pr-10">
-          <div class="relative shrink-0">
-            ${avatar(p, 'w-[104px] h-[104px] sm:w-[124px] sm:h-[124px] text-3xl border-2 border-line2')}
-            <label class="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-gold text-black grid place-items-center cursor-pointer ring-4 ring-card hover:bg-gold-light" aria-label="Keisti nuotrauką">
-              ${icon('plus', 'w-5 h-5', 2.5)}
-              <input type="file" accept="image/*" class="sr-only" data-avatar-input>
-            </label>
-          </div>
-          <div class="min-w-0">
-            <p class="text-sm font-semibold text-muted tracking-wide">${esc(C.APP_NAME)} narys</p>
-            <h1 class="text-3xl sm:text-4xl font-black leading-tight truncate">${esc(p.name)}</h1>
-            <span class="chip mt-3">${icon('star', 'w-4 h-4 text-gold')} ${esc(li.title.name)} · ${li.level} lygis</span>
-            <p class="mt-3 text-xs text-muted flex items-center gap-1.5">${icon('calendar', 'w-3.5 h-3.5')} Prisijungė ${monthYear(p.createdAt)}</p>
-          </div>
-        </div>
-        <div class="h-px lg:h-auto lg:w-px bg-line lg:self-stretch"></div>
-        <a href="#/lygiai" class="flex-1 lg:pl-10 block group">
-          <div class="flex items-center gap-3">
-            <span class="pill-outline">LYGIS ${li.level}</span>
-            <span class="text-xl font-bold">${esc(li.title.name)}</span>
-            <span class="ml-auto tabular-nums"><b class="text-lg">${li.max ? fmt(li.xp) : fmt(li.into)}</b> <span class="text-muted">/ ${li.max ? '∞' : fmt(li.need)} XP</span></span>
-          </div>
-          <div class="bar mt-5 h-3"><i style="width:${li.pct}%"></i></div>
-          <div class="mt-4 flex items-center justify-between">
-            <span class="text-muted">${li.max ? 'Aukščiausias lygis pasiektas' : `Dar <b class="text-gold">${fmt(li.remaining)} XP</b> iki ${li.level + 1} lygio`}</span>
-            <b class="tabular-nums">${li.pct} %</b>
-          </div>
-        </a>
+    <section class="flex items-center gap-4">
+      <div class="relative shrink-0">
+        ${avatar(p, 'w-[72px] h-[72px] text-xl')}
+        <label class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[#232326] text-white/80 grid place-items-center cursor-pointer ring-2 ring-bg hover:text-white" aria-label="Keisti nuotrauką">
+          ${icon('camera', 'w-3.5 h-3.5', 2)}
+          <input type="file" accept="image/*" class="sr-only" data-avatar-input>
+        </label>
       </div>
-      <div class="h-px bg-line my-6 lg:my-8"></div>
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
-        ${statTile(`<span class="text-flame">${icon('flame', 'w-8 h-8')}</span>`, st.streak, `${plural(st.streak, 'Diena', 'Dienos', 'Dienų')} iš eilės`)}
-        ${statTile(`<span class="text-white/90">${icon('check-check', 'w-8 h-8')}</span>`, fmt(st.tasksDone), 'Atliktos užduotys', '#/lygiai')}
-        ${statTile(`<span class="text-gold">${icon('trophy', 'w-8 h-8')}</span>`, st.longestStreak, 'Ilgiausia serija')}
-        ${statTile(`<span class="text-gold">${icon('calendar-days', 'w-8 h-8')}</span>`, st.activeDays, 'Dienos su app\'u')}
+      <div class="min-w-0">
+        <h1 class="page-title truncate">${esc(p.name)}</h1>
+        <p class="text-sm text-muted">${esc(li.title.name)} · ${li.level} lygis</p>
+        <p class="text-xs text-dim mt-0.5">Prisijungė ${monthYear(p.createdAt)}</p>
       </div>
-    </section>`;
+    </section>
+
+    <a href="#/lygiai" class="card card-pad block mt-5">
+      <div class="flex items-baseline justify-between gap-4 text-sm">
+        <span>Lygis ${li.level} · ${esc(li.title.name)}</span>
+        <span class="text-muted tabular-nums">${li.max ? fmt(li.xp) : `${fmt(li.into)} / ${fmt(li.need)}`} XP</span>
+      </div>
+      <div class="bar mt-3"><i style="width:${li.pct}%"></i></div>
+      <p class="mt-2.5 text-sm text-muted">${li.max ? 'Aukščiausias lygis' : `Dar ${fmt(li.remaining)} XP iki ${li.level + 1} lygio · ${li.pct} %`}</p>
+    </a>
+
+    <div class="card grid grid-cols-4 items-center divide-x divide-line py-4 mt-3">
+      ${cell(st.streak, 'Serija')}
+      ${cell(fmt(st.tasksDone), 'Atlikta')}
+      ${cell(st.longestStreak, 'Ilgiausia')}
+      ${cell(st.activeDays, 'Dienos')}
+    </div>`;
   }
 
   function achievements() {
     const un = S.state.achievements;
     const count = C.ACHIEVEMENTS.filter((a) => un[a.id]).length;
     return `
-    <section class="card card-pad flex flex-col">
-      <div class="flex items-center gap-3">
-        <span class="text-gold">${icon('trophy', 'w-7 h-7')}</span>
-        <h2 class="flex-1 text-2xl font-extrabold">Mano pasiekimai</h2>
-        <span class="text-muted tabular-nums">${count} / ${C.ACHIEVEMENTS.length}</span>
+    <section class="card card-pad">
+      <div class="flex items-baseline justify-between gap-3">
+        <h2 class="h-section">Pasiekimai</h2>
+        <span class="text-sm text-muted tabular-nums">${count}/${C.ACHIEVEMENTS.length}</span>
       </div>
-      <div class="mt-5 grid grid-cols-8 gap-1.5 sm:gap-2.5">
+      <div class="mt-4 grid grid-cols-8 gap-1.5">
         ${C.ACHIEVEMENTS.map((a) => `
-          <button data-action="achievements" class="aspect-square rounded-xl sm:rounded-2xl grid place-items-center border transition ${un[a.id] ? 'bg-gold/10 border-gold/40 text-gold shadow-[0_0_18px_rgba(240,180,41,0.15)]' : 'bg-card2 border-line text-white/35'}" title="${esc(a.name)}" aria-label="${esc(a.name)}">
-            ${icon(un[a.id] ? a.icon : 'lock', 'w-[18px] h-[18px] sm:w-6 sm:h-6')}
+          <button data-action="achievements" class="aspect-square rounded-xl grid place-items-center ${un[a.id] ? 'bg-gold/10 text-gold' : 'bg-white/[0.04] text-white/20'}" title="${esc(a.name)}" aria-label="${esc(a.name)}">
+            ${icon(un[a.id] ? a.icon : 'lock', 'w-[18px] h-[18px]', 1.75)}
           </button>`).join('')}
       </div>
-      <p class="mt-5 text-muted">Rink toliau – kiekvienas ženklelis atrakinamas veiksmais.</p>
-      <div class="mt-auto pt-5"><div class="h-px bg-line"></div></div>
-      <button data-action="achievements" class="mt-5 flex items-center justify-between text-gold font-bold">Peržiūrėti pasiekimus ${icon('arrow-right', 'w-5 h-5')}</button>
+      <button data-action="achievements" class="link mt-4">Visi pasiekimai</button>
     </section>`;
   }
 
   function goals() {
     const p = S.state.profile;
     return `
-    <section class="card card-pad flex flex-col">
-      <div class="flex items-center gap-3">
-        <span class="text-gold">${icon('target', 'w-7 h-7')}</span>
-        <h2 class="flex-1 text-2xl font-extrabold">Mano tikslai</h2>
-        ${p.goal ? '<span class="text-sm text-muted">Išsaugota</span>' : ''}
+    <section class="card card-pad">
+      <div class="flex items-baseline justify-between gap-3">
+        <h2 class="h-section">Tikslai</h2>
+        <button data-action="edit-goals" class="text-sm text-gold">Redaguoti</button>
       </div>
-      <div class="mt-5 rounded-3xl bg-well border border-line p-5 flex gap-4">
-        <span class="text-gold mt-0.5">${icon('target', 'w-7 h-7')}</span>
-        <div class="min-w-0">
-          <p class="text-muted">Pagrindinis tikslas</p>
-          <p class="mt-1 text-xl sm:text-2xl font-extrabold break-words ${p.goal ? '' : 'text-white/40'}">${p.goal ? esc(p.goal) : 'Dar nenustatytas'}</p>
-        </div>
-      </div>
-      ${p.tags && p.tags.length ? `<div class="mt-4 flex flex-wrap gap-2">${p.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
-      <div class="mt-auto pt-5"><div class="h-px bg-line"></div></div>
-      <button data-action="edit-goals" class="mt-5 flex items-center justify-between text-gold font-bold">Redaguoti mano tikslus ${icon('arrow-right', 'w-5 h-5')}</button>
+      <p class="mt-3 text-lg font-semibold break-words ${p.goal ? '' : 'text-white/30'}">${p.goal ? esc(p.goal) : 'Pagrindinis tikslas nenustatytas'}</p>
+      ${p.tags && p.tags.length ? `<div class="mt-3 flex flex-wrap gap-1.5">${p.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
     </section>`;
   }
 
   function codeCard() {
     return `
     <section class="card card-pad lg:col-span-2">
-      <div class="flex items-center gap-3">
-        <span class="text-gold">${icon('gift', 'w-7 h-7')}</span>
-        <h2 class="flex-1 text-2xl font-extrabold">Pasidalink progresu</h2>
+      <div class="flex items-baseline justify-between gap-3">
+        <h2 class="h-section">Profilio kodas</h2>
+        <a href="#/draugai" class="text-sm text-gold">Draugai</a>
       </div>
-      <p class="mt-2 text-muted">Nusiųsk savo profilio kodą draugui – jis matys tave savo lyderių lentelėje.</p>
-      <div class="mt-5 flex flex-col sm:flex-row gap-3 rounded-3xl border border-gold/20 bg-well p-3 sm:p-4 sm:items-center">
-        <code class="flex-1 min-w-0 px-2 text-gold font-mono text-sm break-all leading-relaxed">${esc(S.myCode())}</code>
-        <button data-action="copy-code" class="btn btn-sm h-12 px-5 border border-gold/40 bg-gold/10 text-gold hover:bg-gold/20">${icon('copy', 'w-5 h-5')} Kopijuoti</button>
-      </div>
-      <a href="#/draugai" class="mt-5 inline-flex items-center gap-2 text-gold font-bold">Lyderių lentelė ${icon('arrow-right', 'w-5 h-5')}</a>
+      <p class="mt-1 text-sm text-muted">Nusiųsk draugui – jis matys tave savo lyderių lentelėje.</p>
+      <code class="mt-3 block font-mono text-xs text-white/60 break-all leading-relaxed">${esc(S.myCode())}</code>
+      <button data-action="copy-code" class="btn-ghost btn-sm mt-3">${icon('copy', 'w-4 h-4', 1.75)} Kopijuoti</button>
     </section>`;
   }
 
   function render() {
     const st = S.stats();
     return `
+    <div class="max-w-3xl">
       ${hero(st)}
-      <div class="grid lg:grid-cols-2 gap-4 lg:gap-6 mt-4 lg:mt-6">
+      <div class="grid lg:grid-cols-2 gap-3 lg:gap-4 mt-3 lg:mt-4">
         ${achievements()}
         ${goals()}
         ${codeCard()}
-      </div>`;
+      </div>
+    </div>`;
   }
 
   // ---------- Avataras ----------
@@ -175,16 +146,16 @@ LU.screens.profile = (() => {
   function openAchievements() {
     const un = S.state.achievements;
     modal(`
-      ${modalHeader('Pasiekimai', 'trophy')}
-      <div class="px-5 sm:px-6 pb-6 space-y-2.5">
+      ${modalHeader('Pasiekimai')}
+      <div class="px-5 sm:px-6 pb-6 divide-y divide-line">
         ${C.ACHIEVEMENTS.map((a) => `
-          <div class="flex items-center gap-4 rounded-2xl border p-3.5 ${un[a.id] ? 'border-gold/30 bg-gold/[0.06]' : 'border-line bg-well'}">
-            <div class="${un[a.id] ? 'icon-box-gold' : 'icon-box text-white/35'} w-12 h-12">${icon(un[a.id] ? a.icon : 'lock', 'w-6 h-6')}</div>
+          <div class="flex items-center gap-3.5 py-3">
+            <span class="${un[a.id] ? 'text-gold' : 'text-white/20'} shrink-0">${icon(un[a.id] ? a.icon : 'lock', 'w-5 h-5', 1.75)}</span>
             <div class="flex-1 min-w-0">
-              <p class="font-bold ${un[a.id] ? '' : 'text-white/70'}">${esc(a.name)}</p>
+              <p class="${un[a.id] ? '' : 'text-white/60'}">${esc(a.name)}</p>
               <p class="text-sm text-muted">${esc(a.text)}</p>
             </div>
-            ${un[a.id] ? `<span class="text-xs text-gold font-bold whitespace-nowrap">${LU.ui.dayLabel(S.util.dateKey(new Date(un[a.id])))}</span>` : ''}
+            ${un[a.id] ? `<span class="text-xs text-muted whitespace-nowrap">${LU.ui.dayLabel(S.util.dateKey(new Date(un[a.id])))}</span>` : ''}
           </div>`).join('')}
       </div>`);
   }
@@ -194,8 +165,8 @@ LU.screens.profile = (() => {
     let tags = [...(p.tags || [])];
     const all = () => [...new Set([...TAG_SUGGESTIONS, ...tags])];
     modal(`
-      ${modalHeader('Mano tikslai', 'target')}
-      <form class="px-5 sm:px-6 pb-6 space-y-6">
+      ${modalHeader('Tikslai')}
+      <form class="px-5 sm:px-6 pb-6 space-y-5">
         <div>
           <label class="label" for="g-goal">Pagrindinis tikslas</label>
           <input id="g-goal" class="field" maxlength="60" placeholder="pvz. Nubėgti maratoną" value="${esc(p.goal || '')}" autofocus>
@@ -205,15 +176,15 @@ LU.screens.profile = (() => {
           <div class="flex flex-wrap gap-2" data-tags></div>
           <div class="flex gap-2 mt-3">
             <input data-newtag class="field !h-11" maxlength="20" placeholder="Nauja žymė">
-            <button type="button" data-addtag class="btn-ghost !h-11 !px-4">${icon('plus', 'w-5 h-5')}</button>
+            <button type="button" data-addtag class="btn-ghost !h-11 !px-4" aria-label="Pridėti žymę">${icon('plus', 'w-5 h-5', 1.75)}</button>
           </div>
         </div>
-        <button type="submit" class="btn-gold w-full">${icon('check', 'w-5 h-5', 2.5)} Išsaugoti</button>
+        <button type="submit" class="btn-gold w-full">Išsaugoti</button>
       </form>`, {
       onMount: (el, close) => {
         const box = el.querySelector('[data-tags]');
         const paint = () => {
-          box.innerHTML = all().map((t) => `<button type="button" data-tag="${esc(t)}" class="rounded-xl border px-3 py-1.5 text-sm font-medium transition ${tags.includes(t) ? 'bg-gold/15 border-gold/60 text-gold' : 'bg-well border-line text-white/70'}">${esc(t)}</button>`).join('');
+          box.innerHTML = all().map((t) => `<button type="button" data-tag="${esc(t)}" class="opt px-3 py-1.5 text-sm !font-medium" aria-pressed="${tags.includes(t)}">${esc(t)}</button>`).join('');
         };
         paint();
         box.addEventListener('click', (e) => {
@@ -245,20 +216,20 @@ LU.screens.profile = (() => {
   function openEditProfile() {
     const p = S.state.profile;
     modal(`
-      ${modalHeader('Redaguoti profilį', 'user')}
-      <form class="px-5 sm:px-6 pb-6 space-y-6">
+      ${modalHeader('Redaguoti profilį')}
+      <form class="px-5 sm:px-6 pb-6 space-y-5">
         <div class="flex items-center gap-4">
           <div data-av>${avatar(p, 'w-20 h-20 text-2xl')}</div>
           <div class="flex flex-wrap gap-2">
-            <label class="btn-ghost !h-11 !px-4 cursor-pointer text-sm">${icon('camera', 'w-4 h-4')} Įkelti nuotrauką<input type="file" accept="image/*" class="sr-only" data-file></label>
-            ${p.avatar ? `<button type="button" data-rm class="btn-ghost !h-11 !px-4 text-sm text-red-400">${icon('trash-2', 'w-4 h-4')} Pašalinti</button>` : ''}
+            <label class="btn-ghost btn-sm cursor-pointer">Įkelti nuotrauką<input type="file" accept="image/*" class="sr-only" data-file></label>
+            ${p.avatar ? `<button type="button" data-rm class="btn-ghost btn-sm text-red-400">Pašalinti</button>` : ''}
           </div>
         </div>
         <div>
           <label class="label" for="p-name">Vardas</label>
           <input id="p-name" class="field" maxlength="30" value="${esc(p.name)}" required>
         </div>
-        <button type="submit" class="btn-gold w-full">${icon('check', 'w-5 h-5', 2.5)} Išsaugoti</button>
+        <button type="submit" class="btn-gold w-full">Išsaugoti</button>
       </form>`, {
       onMount: (el, close) => {
         el.querySelector('[data-file]').addEventListener('change', async (e) => {

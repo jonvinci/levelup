@@ -3,24 +3,23 @@ window.LU = window.LU || {};
 LU.screens = LU.screens || {};
 
 LU.screens.menu = (() => {
-  const { icon, esc, avatar, ring, toast, confirm, modal, modalHeader } = LU.ui;
+  const { icon, esc, avatar, toast, confirm, modal, modalHeader } = LU.ui;
   const S = LU.store;
 
-  function rowItem({ href, action, ic, title, sub, danger }) {
+  function rowItem({ href, action, title, sub, danger }) {
     const attrs = href ? `href="${href}"` : `href="#" data-action="${action}"`;
     return `
       <a ${attrs} class="list-row">
-        <span class="icon-box w-12 h-12 ${danger ? 'text-red-400' : 'text-gold'}">${icon(ic, 'w-[22px] h-[22px]')}</span>
         <span class="flex-1 min-w-0">
-          <span class="block text-[17px] font-bold ${danger ? 'text-red-400' : ''}">${title}</span>
-          ${sub ? `<span class="block text-sm text-muted mt-0.5">${sub}</span>` : ''}
+          <span class="block ${danger ? 'text-red-400' : ''}">${title}</span>
+          ${sub ? `<span class="block text-xs text-muted mt-0.5">${sub}</span>` : ''}
         </span>
-        <span class="text-white/50">${icon('chevron-right', 'w-5 h-5')}</span>
+        <span class="text-white/25">${icon('chevron-right', 'w-4 h-4')}</span>
       </a>`;
   }
 
   const section = (label, items) => `
-    <p class="eyebrow text-muted mt-8 mb-3 px-1">${label}</p>
+    <p class="text-xs text-muted mt-7 mb-2 px-1">${label}</p>
     <div class="list-group">${items.map(rowItem).join('')}</div>`;
 
   function render() {
@@ -28,47 +27,38 @@ LU.screens.menu = (() => {
     const li = S.levelInfo();
     const installed = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
     return `
-    <div class="max-w-2xl mx-auto">
-      <div class="mb-7">
-        <h1 class="inline-block text-4xl sm:text-5xl font-black pb-2 border-b-4 border-gold">Meniu</h1>
-      </div>
+    <div class="max-w-xl">
+      <h1 class="page-title mb-5">Meniu</h1>
 
-      <a href="#/profilis" class="card-gold flex items-center gap-5 p-5 sm:p-6 group">
-        <span class="relative w-[92px] h-[92px] shrink-0">
-          ${ring(li.pct, 92, 5)}
-          <span class="absolute inset-[9px]">${avatar(p, 'w-full h-full text-2xl')}</span>
-        </span>
+      <a href="#/profilis" class="list-row card !rounded-2xl">
+        ${avatar(p, 'w-11 h-11 text-sm')}
         <span class="flex-1 min-w-0">
-          <span class="block text-2xl font-extrabold truncate">${esc(p.name)}</span>
-          <span class="block text-gold font-bold mt-0.5">Lygis ${li.level} · ${esc(li.title.name)}</span>
-          <span class="block text-muted text-sm mt-1">Peržiūrėti profilį</span>
+          <span class="block font-semibold truncate">${esc(p.name)}</span>
+          <span class="block text-sm text-muted">Lygis ${li.level} · ${esc(li.title.name)}</span>
         </span>
-        <span class="text-gold group-hover:translate-x-1 transition">${icon('chevron-right', 'w-6 h-6')}</span>
+        <span class="text-white/25">${icon('chevron-right', 'w-4 h-4')}</span>
       </a>
 
       ${section('Žaidimas', [
-        { href: '#/uzduotys', ic: 'list-checks', title: 'Užduotys ir įpročiai' },
-        { href: '#/lygiai', ic: 'sparkles', title: 'Lygių sistema' },
-        { href: '#/draugai', ic: 'crown', title: 'Lyderių lentelė' },
+        { href: '#/uzduotys', title: 'Užduotys' },
+        { href: '#/lygiai', title: 'Lygiai' },
+        { href: '#/draugai', title: 'Lyderių lentelė' },
       ])}
 
       ${section('Paskyra', [
-        { action: 'edit-profile', ic: 'user', title: 'Redaguoti profilį', sub: 'Vardas ir nuotrauka' },
-        { action: 'edit-goals', ic: 'target', title: 'Mano tikslai' },
-        { action: 'achievements', ic: 'trophy', title: 'Pasiekimai' },
+        { action: 'edit-profile', title: 'Redaguoti profilį', sub: 'Vardas ir nuotrauka' },
+        { action: 'edit-goals', title: 'Tikslai' },
+        { action: 'achievements', title: 'Pasiekimai' },
       ])}
 
       ${section('Duomenys', [
-        { action: 'export', ic: 'download', title: 'Eksportuoti duomenis', sub: 'Atsarginė kopija JSON faile' },
-        { action: 'import', ic: 'upload', title: 'Importuoti duomenis', sub: 'Atkurti iš JSON failo' },
-        ...(installed ? [] : [{ action: 'install', ic: 'smartphone', title: 'Įdiegti programėlę', sub: 'Pridėti prie pradžios ekrano' }]),
-        { action: 'reset', ic: 'trash-2', title: 'Ištrinti visus duomenis', danger: true },
+        { action: 'export', title: 'Eksportuoti duomenis', sub: 'Atsarginė kopija JSON faile' },
+        { action: 'import', title: 'Importuoti duomenis', sub: 'Atkurti iš JSON failo' },
+        ...(installed ? [] : [{ action: 'install', title: 'Įdiegti programėlę', sub: 'Pridėti prie pradžios ekrano' }]),
+        { action: 'reset', title: 'Ištrinti visus duomenis', danger: true },
       ])}
 
-      <div class="text-center mt-12 mb-4">
-        <p class="text-sm font-black tracking-[0.4em] text-white/30">${esc(LU.config.APP_NAME)}</p>
-        <p class="text-xs text-dim mt-2">v${LU.config.VERSION} · Duomenys saugomi tik šiame įrenginyje</p>
-      </div>
+      <p class="text-xs text-dim mt-8 px-1">${esc(LU.config.APP_NAME)} v${LU.config.VERSION} · Duomenys saugomi tik šiame įrenginyje</p>
     </div>`;
   }
 
@@ -100,13 +90,13 @@ LU.screens.menu = (() => {
     const json = S.exportJson();
     const file = `levelup-${S.util.today()}.json`;
     modal(`
-      ${modalHeader('Eksportuoti duomenis', 'download')}
+      ${modalHeader('Eksportuoti duomenis')}
       <div class="px-5 sm:px-6 pb-6 space-y-4">
         <p class="text-sm text-muted">Atsarginė kopija su visais tavo duomenimis. Atsisiųsk failą arba nukopijuok tekstą ir išsaugok kur nors saugiai (pvz. užrašuose ar el. laiške sau).</p>
         <textarea id="exp-json" readonly rows="6" class="field font-mono text-xs resize-none">${esc(json)}</textarea>
         <div class="grid grid-cols-2 gap-2.5">
-          <button data-dl class="btn-ghost !h-12">${icon('download', 'w-5 h-5')} Atsisiųsti</button>
-          <button data-cp class="btn-gold !h-12">${icon('copy', 'w-5 h-5')} Kopijuoti</button>
+          <button data-dl class="btn-ghost">Atsisiųsti</button>
+          <button data-cp class="btn-gold">Kopijuoti</button>
         </div>
       </div>`, {
       onMount: (el) => {
@@ -136,12 +126,12 @@ LU.screens.menu = (() => {
 
   LU.actions.import = () => {
     modal(`
-      ${modalHeader('Importuoti duomenis', 'upload')}
+      ${modalHeader('Importuoti duomenis')}
       <div class="px-5 sm:px-6 pb-6 space-y-4">
-        <label class="btn-ghost w-full cursor-pointer">${icon('upload', 'w-5 h-5')} Pasirinkti JSON failą<input type="file" accept="application/json,.json" class="sr-only" data-imp-file></label>
+        <label class="btn-ghost w-full cursor-pointer">Pasirinkti JSON failą<input type="file" accept="application/json,.json" class="sr-only" data-imp-file></label>
         <p class="text-center text-xs text-muted">arba įklijuok nukopijuotą tekstą</p>
         <textarea id="imp-json" rows="5" class="field font-mono text-xs resize-none" placeholder='{"app":"LEVEL UP", ...}' spellcheck="false"></textarea>
-        <button data-imp-text class="btn-gold w-full">${icon('check', 'w-5 h-5', 2.5)} Importuoti tekstą</button>
+        <button data-imp-text class="btn-gold w-full">Importuoti tekstą</button>
       </div>`, {
       onMount: (el, close) => {
         el.querySelector('[data-imp-file]').addEventListener('change', async (e) => {
@@ -170,14 +160,14 @@ LU.screens.menu = (() => {
       if (choice.outcome === 'accepted') toast('Programėlė įdiegta!', { icon: 'smartphone' });
       return;
     }
-    const step = (n, html) => `<li class="flex gap-3"><span class="w-7 h-7 rounded-full bg-gold text-black grid place-items-center text-sm font-black shrink-0">${n}</span><span class="text-white/80 pt-0.5">${html}</span></li>`;
+    const step = (n, html) => `<li class="flex gap-3 text-sm"><span class="w-4 text-muted tabular-nums shrink-0">${n}.</span><span class="text-white/80">${html}</span></li>`;
     modal(`
-      ${modalHeader('Įdiegti programėlę', 'smartphone')}
+      ${modalHeader('Įdiegti programėlę')}
       <div class="px-5 sm:px-6 pb-7 space-y-6">
         <div>
           <p class="font-bold mb-3">iPhone (Safari)</p>
           <ol class="space-y-3">
-            ${step(1, `Spausk <b>Dalintis</b> ${icon('share-2', 'w-4 h-4 inline -mt-1')} apačioje`)}
+            ${step(1, 'Spausk <b>Dalintis</b> apačioje')}
             ${step(2, 'Pasirink <b>„Į pradžios ekraną"</b> (Add to Home Screen)')}
           </ol>
         </div>
