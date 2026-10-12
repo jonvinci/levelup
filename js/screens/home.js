@@ -81,29 +81,38 @@ LU.screens.home = (() => {
   }
 
   function missions() {
-    const due = S.dueTasks();
-    const done = due.filter((d) => d.done).length;
-    const pct = due.length ? Math.round((done / due.length) * 100) : 0;
-    const allDone = due.length && done === due.length;
+    // Dienos pažanga ir premija skaičiuojamos iš visko (užduotys + šiandienos įpročiai),
+    // bet sąraše rodomos tik vienkartinės užduotys – įpročiai yra „Mano įpročiai" kortelėje.
+    const all = S.dueTasks();
+    const due = all.filter((d) => d.task.type === 'once');
+    const habitsDue = all.filter((d) => d.task.type === 'habit');
+    const done = all.filter((d) => d.done).length;
+    const pct = all.length ? Math.round((done / all.length) * 100) : 0;
+    const allDone = all.length && done === all.length;
+    const cnt = (list) => `${list.filter((d) => d.done).length}/${list.length}`;
     return `
     <section class="card card-pad">
       <div class="flex items-center gap-3">
         <div class="icon-box w-11 h-11 sm:w-12 sm:h-12 ${allDone ? 'text-gold' : 'text-flame'}">${icon('flame', 'w-6 h-6')}</div>
         <h2 class="flex-1 min-w-0 text-[19px] sm:text-2xl font-extrabold leading-tight">Šiandienos misijos</h2>
         <div class="text-right whitespace-nowrap tabular-nums">
-          <span class="text-white/60 font-semibold">${done} / ${due.length}</span>
+          <span class="text-white/60 font-semibold">${done} / ${all.length}</span>
           <span class="ml-2 text-gold font-extrabold">${pct} %</span>
         </div>
       </div>
       ${allDone
         ? `<p class="mt-4 text-gold font-semibold flex items-center gap-2">Visos užduotys atliktos. Šaunuolis! <span class="pill-outline text-[10px] py-0.5">+${LU.config.ALL_DONE_BONUS} XP</span></p>`
-        : `<p class="mt-4 text-sm text-muted">${due.length ? `Atlik visas ir gauk <b class="text-gold">+${LU.config.ALL_DONE_BONUS} XP</b> premiją.` : 'Šiandien misijų nėra.'}</p>`}
+        : `<p class="mt-4 text-sm text-muted">${all.length ? `Atlik šiandienos užduotis ir įpročius – gausi <b class="text-gold">+${LU.config.ALL_DONE_BONUS} XP</b> premiją.` : 'Šiandien misijų nėra.'}</p>`}
       <div class="bar mt-4"><i style="width:${pct}%"></i></div>
-      ${due.length ? `<ul class="mt-5 space-y-2.5">${due.map(missionRow).join('')}</ul>` : `
-        <div class="mt-6 rounded-2xl border border-dashed border-line2 p-6 text-center">
-          <p class="text-white/70">Pridėk pirmą užduotį ir pradėk rinkti XP.</p>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <span class="chip !text-xs">${icon('list-checks', 'w-3.5 h-3.5 text-gold')} Užduotys ${cnt(due)}</span>
+        <button data-action="scroll-habits" class="chip !text-xs hover:border-gold/40">${icon('repeat', 'w-3.5 h-3.5 text-gold')} Įpročiai ${cnt(habitsDue)} ${icon('chevron-down', 'w-3.5 h-3.5 text-muted')}</button>
+      </div>
+      ${due.length ? `<ul class="mt-4 space-y-2.5">${due.map(missionRow).join('')}</ul>` : `
+        <div class="mt-4 rounded-2xl border border-dashed border-line2 p-5 text-center">
+          <p class="text-white/70 text-sm">Šiandien vienkartinių užduočių nėra.</p>
         </div>`}
-      <button data-action="add-task" class="mt-4 w-full h-12 rounded-2xl border border-dashed border-line2 text-white/60 hover:text-gold hover:border-gold/40 font-semibold inline-flex items-center justify-center gap-2 transition">
+      <button data-action="add-task" data-type="once" data-lock="1" class="mt-4 w-full h-12 rounded-2xl border border-dashed border-line2 text-white/60 hover:text-gold hover:border-gold/40 font-semibold inline-flex items-center justify-center gap-2 transition">
         ${icon('plus', 'w-5 h-5')} Pridėti užduotį
       </button>
     </section>`;
@@ -139,7 +148,7 @@ LU.screens.home = (() => {
   function habits() {
     const list = S.state.tasks.filter((t) => t.type === 'habit').sort((a, b) => a.order - b.order);
     return `
-    <section class="card card-pad">
+    <section id="habits-card" class="card card-pad scroll-mt-24">
       <div class="flex items-center gap-3">
         <div class="icon-box-gold w-12 h-12">${icon('repeat', 'w-6 h-6')}</div>
         <h2 class="flex-1 text-xl sm:text-2xl font-extrabold">Mano įpročiai</h2>
@@ -162,6 +171,11 @@ LU.screens.home = (() => {
       <div class="lg:col-span-5 lg:self-start">${habits()}</div>
     </div>`;
   }
+
+  LU.actions['scroll-habits'] = () => {
+    const el = document.getElementById('habits-card');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return { render };
 })();

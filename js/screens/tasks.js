@@ -47,33 +47,13 @@ LU.screens.tasks = (() => {
       ${items.length ? `<div class="divide-y divide-line border-t border-line">${items.map(row).join('')}</div>`
         : `<p class="px-6 pb-6 text-sm text-muted">${empty}</p>`}
       <div class="px-5 sm:px-6 pb-5 pt-1">
-        <button data-action="add-task" data-type="${type}" class="w-full h-11 rounded-2xl border border-dashed border-line2 text-white/60 hover:text-gold hover:border-gold/40 text-sm font-semibold inline-flex items-center justify-center gap-2 transition">${icon('plus', 'w-4 h-4')} Pridėti</button>
+        <button data-action="add-task" data-type="${type}" data-lock="1" class="w-full h-11 rounded-2xl border border-dashed border-line2 text-white/60 hover:text-gold hover:border-gold/40 text-sm font-semibold inline-flex items-center justify-center gap-2 transition">${icon('plus', 'w-4 h-4')} Pridėti</button>
       </div>
     </section>`;
   }
 
-  /** Tik įpročių valdymas (atidaromas paspaudus „Valdyti" prie „Mano įpročiai"). */
-  function renderHabits(habits) {
-    return `
-    <a href="#/" class="inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-white mb-4">${icon('chevron-left', 'w-4 h-4')} Pagrindinis</a>
-    <section class="flex items-end justify-between gap-4 mb-6 lg:mb-8">
-      <div>
-        <p class="eyebrow text-gold">Valdymas</p>
-        <h1 class="mt-2 text-[30px] sm:text-4xl lg:text-5xl font-black tracking-tight uppercase leading-none">Įpročiai</h1>
-      </div>
-      <button data-action="add-task" data-type="habit" data-lock="1" class="btn-gold h-12 px-5 shrink-0">${icon('plus', 'w-5 h-5')}<span>Naujas</span></button>
-    </section>
-    <div class="max-w-3xl">
-      ${section('Mano įpročiai', 'repeat', habits, 'Įpročių dar nėra. Pridėk pasikartojančią užduotį ir sek savo seriją.', 'habit')}
-      <p class="mt-6 text-sm text-muted flex items-start gap-2">${icon('info', 'w-4 h-4 mt-0.5 shrink-0')} Paspausk įprotį, kad pakeistum pavadinimą, XP, ikoną ar savaitės dienas. Ištrynus įprotį, jau uždirbtas XP lieka.</p>
-      <a href="#/uzduotys" class="mt-5 inline-flex items-center gap-2 text-gold font-bold">Visos užduotys ${icon('arrow-right', 'w-5 h-5')}</a>
-    </div>`;
-  }
-
   function render() {
     const tasks = [...S.state.tasks].sort((a, b) => a.order - b.order);
-    const habits = tasks.filter((t) => t.type === 'habit');
-    if (LU.app.route() === 'iprociai') return renderHabits(habits);
     const weekAgo = S.util.addDays(S.util.today(), -7);
     const once = tasks.filter((t) => t.type === 'once' && (!t.doneDate || t.doneDate >= weekAgo))
       .sort((a, b) => (!!a.doneDate - !!b.doneDate) || (a.date < b.date ? -1 : 1));
@@ -83,13 +63,17 @@ LU.screens.tasks = (() => {
         <p class="eyebrow text-gold">Valdymas</p>
         <h1 class="mt-2 text-[30px] sm:text-4xl lg:text-5xl font-black tracking-tight uppercase leading-none">Užduotys</h1>
       </div>
-      <button data-action="add-task" class="btn-gold h-12 px-5 shrink-0">${icon('plus', 'w-5 h-5')}<span>Nauja</span></button>
+      <button data-action="add-task" data-type="once" data-lock="1" class="btn-gold h-12 px-5 shrink-0">${icon('plus', 'w-5 h-5')}<span>Nauja</span></button>
     </section>
-    <div class="grid lg:grid-cols-2 gap-4 lg:gap-6 items-start">
-      ${section('Įpročiai', 'repeat', habits, 'Pasikartojančios užduotys tam tikromis savaitės dienomis. Jos kasdien atsinaujina.', 'habit')}
-      ${section('Vienkartinės', 'circle-check', once, 'Vienkartinės užduotys skirtos konkrečiai dienai. Neatliktos persikelia į kitą dieną.', 'once')}
-    </div>
-    <p class="mt-6 text-sm text-muted flex items-start gap-2">${icon('info', 'w-4 h-4 mt-0.5 shrink-0')} Ištrynus užduotį, jau uždirbtas XP ir istorija išlieka.</p>`;
+    <div class="max-w-3xl">
+      ${section('Vienkartinės užduotys', 'circle-check', once, 'Vienkartinės užduotys skirtos konkrečiai dienai. Neatliktos persikelia į kitą dieną.', 'once')}
+      <p class="mt-6 text-sm text-muted flex items-start gap-2">${icon('info', 'w-4 h-4 mt-0.5 shrink-0')} Ištrynus užduotį, jau uždirbtas XP ir istorija išlieka.</p>
+      <div class="mt-4 tile p-4 sm:p-5 flex items-center gap-4">
+        <div class="icon-box-gold w-11 h-11">${icon('repeat', 'w-5 h-5')}</div>
+        <p class="flex-1 text-sm text-white/80">Pasikartojantys įpročiai valdomi atskirai.</p>
+        <button data-action="manage-habits" class="btn btn-sm border border-gold/40 bg-gold/10 text-gold hover:bg-gold/20">Įpročiai</button>
+      </div>
+    </div>`;
   }
 
   // ---------- Forma ----------
@@ -97,14 +81,15 @@ LU.screens.tasks = (() => {
     const today = S.util.today();
     const f = task
       ? { ...task, days: [...task.days], date: task.date || today }
-      : { title: '', note: '', icon: 'target', xp: 10, type: preset.type || 'habit', days: [1, 2, 3, 4, 5, 6, 7], date: today };
+      : { title: '', note: '', icon: 'target', xp: 10, type: preset.type || 'once', days: [1, 2, 3, 4, 5, 6, 7], date: today };
     if (!C.XP_CHOICES.includes(f.xp)) f.custom = true;
     // Redaguojant ar kuriant iš „Įpročiai" puslapio tipas nekeičiamas – įprotis lieka įpročiu
-    const lockType = !!task || !!preset.lock;
+    // Tipas nustatomas pagal vietą, iš kur kuriama (misijos/užduotys – vienkartinė, įpročiai – įprotis)
+    const lockType = true;
     const isHabit = f.type === 'habit';
 
     const html = `
-      ${modalHeader(task ? (isHabit ? 'Redaguoti įprotį' : 'Redaguoti užduotį') : (lockType ? 'Naujas įprotis' : 'Nauja užduotis'), isHabit ? 'repeat' : 'list-todo')}
+      ${modalHeader(task ? (isHabit ? 'Redaguoti įprotį' : 'Redaguoti užduotį') : (isHabit ? 'Naujas įprotis' : 'Nauja užduotis'), isHabit ? 'repeat' : 'list-todo')}
       <form class="px-5 sm:px-6 pb-6 space-y-6" novalidate>
         ${lockType ? '' : `<div class="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-well border border-line" role="tablist">
           <button type="button" data-type="habit" class="seg justify-center !h-11 !rounded-xl">${icon('repeat', 'w-4 h-4')} Įprotis</button>
