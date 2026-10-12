@@ -99,22 +99,21 @@ window.LU = window.LU || {};
       <polygon points="${starPts(32, 33, 11.5, 4.8)}" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>`,
 
     // 8 Meistras – užpildytas šešiakampis, šviesi žvaigždė, kampų taškai
-    (id) => `<defs>${lg(id, 0.95, 0.45)}${wl(id + 'w', 0.4, 0)}</defs>
+    (id) => `<defs>${lg(id, 0.95, 0.45)}${wl(id + 'w', 0.22, 0)}</defs>
       <polygon points="${hexPts(32, 32, 25)}" fill="url(#${id})" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
       <polygon points="${hexPts(32, 32, 20)}" stroke="#fff" stroke-width="1" opacity=".35"/>
       <path d="M32 7 L53.6 19.5 V27 C46 22 18 22 10.4 27 V19.5 Z" fill="url(#${id}w)"/>
       <polygon points="${starPts(32, 33, 12, 5)}" fill="#fff" opacity=".92"/>
-      ${[0, 60, 120, 180, 240, 300].map((d) => { const a = (d - 90) * Math.PI / 180; return `<circle cx="${(32 + 25 * Math.cos(a)).toFixed(1)}" cy="${(32 + 25 * Math.sin(a)).toFixed(1)}" r="1.9" fill="#fff" opacity=".8"/>`; }).join('')}`,
+`,
 
     // 9 Kūrėjas – briaunuotas brangakmenis su blyksniu
-    (id) => `<defs>${lg(id, 1, 0.5)}${wl(id + 'w', 0.55, 0.05)}</defs>
+    (id) => `<defs>${lg(id, 1, 0.5)}${wl(id + 'w', 0.35, 0.05)}</defs>
       <polygon points="14,25 23,13 41,13 50,25 32,54" fill="url(#${id})" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
       <polygon points="23,13 32,25 41,13" fill="url(#${id}w)"/>
-      <path d="M14 25 H50 M23 13 L27 25 L32 54 L37 25 L41 13 M27 25 L32 13 L37 25" stroke="#fff" stroke-width="1.1" stroke-linejoin="round" opacity=".55"/>
-      <path d="M52 9 l1.3 3.2 3.2 1.3 -3.2 1.3 -1.3 3.2 -1.3 -3.2 -3.2 -1.3 3.2 -1.3z" fill="#fff" opacity=".9"/>`,
+      <path d="M14 25 H50 M23 13 L27 25 L32 54 L37 25 L41 13 M27 25 L32 13 L37 25" stroke="#fff" stroke-width="1" stroke-linejoin="round" opacity=".38"/>`,
 
     // 10 Nepalaužiamas – skydas su sparnais
-    (id) => `<defs>${lg(id, 1, 0.45)}${wl(id + 'w', 0.45, 0)}</defs>
+    (id) => `<defs>${lg(id, 1, 0.45)}${wl(id + 'w', 0.25, 0)}</defs>
       ${[0, 1, 2, 3].map((k) => `<path d="M${19 - k * 0.5} ${22 + k * 6} C${11 - k * 2} ${19 + k * 6} ${5 - k} ${21 + k * 6} ${2 + k * 1.5} ${25 + k * 6} C${8} ${27 + k * 5.5} ${13} ${29 + k * 5.5} ${19} ${29 + k * 5.5} Z" fill="currentColor" opacity="${0.9 - k * 0.15}"/>`).join('')}
       ${[0, 1, 2, 3].map((k) => `<path d="M${45 + k * 0.5} ${22 + k * 6} C${53 + k * 2} ${19 + k * 6} ${59 + k} ${21 + k * 6} ${62 - k * 1.5} ${25 + k * 6} C${56} ${27 + k * 5.5} ${51} ${29 + k * 5.5} ${45} ${29 + k * 5.5} Z" fill="currentColor" opacity="${0.9 - k * 0.15}"/>`).join('')}
       <path d="${SHIELD_S}" fill="url(#${id})" stroke="#fff" stroke-opacity=".5" stroke-width="1.4" stroke-linejoin="round"/>
@@ -122,7 +121,7 @@ window.LU = window.LU || {};
       <path d="M32 24 L35 31 L32 44 L29 31 Z" fill="#fff" opacity=".9"/>`,
 
     // 11 Verslininkas – lauro vainikas aplink brangakmenio medalioną
-    (id) => `<defs>${lg(id, 1, 0.5)}${wl(id + 'w', 0.6, 0)}</defs>
+    (id) => `<defs>${lg(id, 1, 0.5)}${wl(id + 'w', 0.3, 0)}</defs>
       ${laurel(32, 32, 21, 'currentColor', 6, 100, 222)}
       <circle cx="32" cy="31" r="13" fill="url(#${id})" stroke="#fff" stroke-opacity=".45" stroke-width="1.3"/>
       <polygon points="25,28 29,23.5 35,23.5 39,28 32,38" fill="#fff" opacity=".88"/>
@@ -131,9 +130,8 @@ window.LU = window.LU || {};
       <path d="M26 54 Q32 50 38 54" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>`,
 
     // 12 Vizionierius – spindulių medalionas su akimi ir žvaigžde
-    (id) => `<defs>${lg(id, 1, 0.55)}${wl(id + 'w', 0.55, 0)}</defs>
-      ${rays(16, 32, 32, 19, 29, 2.2, 0.85)}
-      ${rays(16, 32, 32, 20, 25, 1.2, 0.5).replace(/line /g, 'line transform="rotate(11.25 32 32)" ')}
+    (id) => `<defs>${lg(id, 1, 0.55)}${wl(id + 'w', 0.3, 0)}</defs>
+      ${rays(12, 32, 32, 20, 27, 2, 0.6)}
       <circle cx="32" cy="32" r="17" fill="url(#${id})" stroke="#fff" stroke-opacity=".5" stroke-width="1.4"/>
       <circle cx="32" cy="32" r="13.5" stroke="#fff" stroke-opacity=".35" stroke-width="1"/>
       <path d="M20.5 32 C24 26 40 26 43.5 32 C40 38 24 38 20.5 32 Z" fill="#fff" opacity=".92"/>
@@ -142,30 +140,27 @@ window.LU = window.LU || {};
       <ellipse cx="26" cy="22" rx="6" ry="2.6" fill="url(#${id}w)" transform="rotate(-25 26 22)"/>`,
 
     // 13 Lyderis – sparnuotas herbas su žvaigžde ir juosta
-    (id) => `<defs>${lg(id, 1, 0.5)}${wl(id + 'w', 0.5, 0)}</defs>
+    (id) => `<defs>${lg(id, 1, 0.5)}${wl(id + 'w', 0.28, 0)}</defs>
       ${[0, 1, 2, 3, 4].map((k) => `<path d="M${20 - k * 0.3} ${20 + k * 5} C${12 - k * 2} ${16 + k * 5} ${4 - k} ${17 + k * 5} ${1 + k * 1.6} ${21 + k * 5} C${8} ${24 + k * 4.5} ${14} ${26 + k * 4.5} ${20} ${26 + k * 4.5} Z" fill="currentColor" opacity="${0.95 - k * 0.13}"/>`).join('')}
       ${[0, 1, 2, 3, 4].map((k) => `<path d="M${44 + k * 0.3} ${20 + k * 5} C${52 + k * 2} ${16 + k * 5} ${60 + k} ${17 + k * 5} ${63 - k * 1.6} ${21 + k * 5} C${56} ${24 + k * 4.5} ${50} ${26 + k * 4.5} ${44} ${26 + k * 4.5} Z" fill="currentColor" opacity="${0.95 - k * 0.13}"/>`).join('')}
       <path d="${SHIELD_S}" fill="url(#${id})" stroke="#fff" stroke-opacity=".55" stroke-width="1.5" stroke-linejoin="round"/>
       <path d="M32 17.5 L43.5 22 V27 C38 24.5 26 24.5 20.5 27 V22 Z" fill="url(#${id}w)"/>
       <polygon points="${starPts(32, 33, 8.5, 3.6)}" fill="#fff"/>
-      <polygon points="${starPts(32, 8, 4, 1.8)}" fill="currentColor" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/>
       <path d="M17 50 L22 47 H42 L47 50 L42 53 H22 Z" fill="currentColor" stroke="#fff" stroke-opacity=".5" stroke-width="1"/>
       <path d="M22 47 V53 M42 47 V53" stroke="#fff" stroke-width=".8" opacity=".5"/>`,
 
     // 14 Čempionas – karūna su brangakmeniais virš lauro, spinduliai ir blyksniai
-    (id) => `<defs>${lg(id, 1, 0.6)}${wl(id + 'w', 0.7, 0)}
+    (id) => `<defs>${lg(id, 1, 0.6)}${wl(id + 'w', 0.4, 0)}
         <radialGradient id="${id}g"><stop offset="0" stop-color="currentColor" stop-opacity=".55"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs>
-      <circle cx="32" cy="31" r="30" fill="url(#${id}g)"/>
-      ${rays(12, 32, 31, 24, 30.5, 1.6, 0.7)}
+      ${rays(8, 32, 31, 25, 30, 1.5, 0.4)}
       ${laurel(32, 34, 23, 'currentColor', 7, 98, 210)}
       <path d="M17 41 L14.5 21 L23.5 29 L32 15 L40.5 29 L49.5 21 L47 41 Z" fill="url(#${id})" stroke="#fff" stroke-opacity=".7" stroke-width="1.4" stroke-linejoin="round"/>
-      <path d="M16.5 37 L15 24 L23.5 31 L32 18 L40.5 31 L49 24 L47.5 37 Z" fill="url(#${id}w)" opacity=".6"/>
+      <path d="M16.5 37 L15 24 L23.5 31 L32 18 L40.5 31 L49 24 L47.5 37 Z" fill="url(#${id}w)" opacity=".45"/>
       <rect x="16.5" y="41" width="31" height="6.5" rx="2" fill="currentColor" stroke="#fff" stroke-opacity=".7" stroke-width="1.2"/>
       <circle cx="32" cy="44.25" r="2.3" fill="#fff"/><circle cx="23.5" cy="44.25" r="1.6" fill="#fff" opacity=".85"/><circle cx="40.5" cy="44.25" r="1.6" fill="#fff" opacity=".85"/>
       <circle cx="14.5" cy="20" r="2.4" fill="#fff"/><circle cx="32" cy="13.5" r="2.8" fill="#fff"/><circle cx="49.5" cy="20" r="2.4" fill="#fff"/>
       <polygon points="${starPts(32, 30, 4.2, 1.7, 4, 0)}" fill="#fff"/>
-      <path d="M54 8 l1.2 2.9 2.9 1.2 -2.9 1.2 -1.2 2.9 -1.2 -2.9 -2.9 -1.2 2.9 -1.2z" fill="#fff"/>
-      <path d="M9 12 l.8 2 2 .8 -2 .8 -.8 2 -.8 -2 -2 -.8 2 -.8z" fill="#fff" opacity=".85"/>`,
+`,
   ];
 
   /** Titulo emblema SVG: titleIndex – 0 (Naujokas) … 13 (Čempionas). */
