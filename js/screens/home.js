@@ -3,7 +3,7 @@ window.LU = window.LU || {};
 LU.screens = LU.screens || {};
 
 LU.screens.home = (() => {
-  const { icon, esc, fmt, longDate, time, ring, scheduleText, dayLabel } = LU.ui;
+  const { icon, esc, fmt, time, ring, scheduleText, dayLabel } = LU.ui;
   const S = LU.store;
 
   function levelCard(st) {
@@ -114,13 +114,15 @@ LU.screens.home = (() => {
     const streak = S.habitStreak(t);
     const doneToday = hist[hist.length - 1].done;
     const WD = LU.config.WEEKDAYS;
+    const just = LU.app.justToggled === t.id;
+    // Visa eilutė – mygtukas: paspaudus įprotis pažymimas atliktu šiandien (arba atšaukiamas)
     return `
-    <div class="flex items-center gap-2.5 sm:gap-3 py-3.5">
-      <div class="${doneToday ? 'icon-box-gold' : 'icon-box text-white/70'} w-10 h-10 sm:w-11 sm:h-11">${icon(t.icon, 'w-5 h-5')}</div>
-      <div class="flex-1 min-w-0">
-        <p class="font-semibold truncate">${esc(t.title)}</p>
-        <p class="text-xs text-muted mt-0.5 truncate">${scheduleText(t.days)} · ${t.xp} XP</p>
-      </div>
+    <button data-action="toggle" data-id="${t.id}" class="mission ${just ? 'just' : ''} w-full flex items-center gap-2.5 sm:gap-3 py-3.5 text-left rounded-xl" aria-pressed="${doneToday}" aria-label="${esc(t.title)} – ${doneToday ? 'atlikta šiandien, paspausk, kad atšauktum' : 'pažymėti atlikta šiandien'}">
+      <span class="chk w-8 h-8 rounded-full grid place-items-center shrink-0 ${doneToday ? 'bg-gold text-black' : 'border-2 border-white/20'}">${doneToday ? icon('check', 'w-4 h-4', 3) : ''}</span>
+      <span class="flex-1 min-w-0">
+        <span class="block font-semibold truncate ${doneToday ? 'text-white/60' : ''}">${esc(t.title)}</span>
+        <span class="mt-0.5 flex items-center gap-1 text-xs text-muted min-w-0">${icon(t.icon, 'w-3.5 h-3.5 shrink-0')}<span class="truncate">${scheduleText(t.days)} · ${t.xp} XP</span></span>
+      </span>
       <div class="flex gap-[3px] sm:gap-1 items-end" aria-label="Paskutinės 7 dienos">
         ${hist.map((h) => `
           <span class="flex flex-col items-center gap-1" title="${WD[h.wd - 1].long}${h.scheduled ? (h.done ? ' – atlikta' : ' – neatlikta') : ' – nesuplanuota'}">
@@ -131,7 +133,7 @@ LU.screens.home = (() => {
       <div class="w-9 sm:w-11 shrink-0 flex items-center justify-end gap-0.5 font-extrabold tabular-nums ${streak ? 'text-flame' : 'text-dim'}">
         ${icon('flame', 'w-4 h-4')}${streak}
       </div>
-    </div>`;
+    </button>`;
   }
 
   function habits() {
@@ -144,19 +146,15 @@ LU.screens.home = (() => {
         <a href="#/uzduotys" class="text-gold font-bold text-sm inline-flex items-center gap-1">Valdyti ${icon('chevron-right', 'w-4 h-4')}</a>
       </div>
       ${list.length
-        ? `<div class="mt-3 divide-y divide-line">${list.map(habitRow).join('')}</div>`
+        ? `<p class="mt-3 text-xs text-muted">Paspausk įprotį, kad pažymėtum jį atliktu šiandien.</p>
+           <div class="mt-1 divide-y divide-line">${list.map(habitRow).join('')}</div>`
         : `<p class="mt-5 text-muted text-sm">Įpročių dar nėra. Pridėk pasikartojančią užduotį ir sek savo seriją.</p>`}
     </section>`;
   }
 
   function render() {
     const st = S.stats();
-    const p = S.state.profile;
     return `
-    <section class="mb-6 lg:mb-8">
-      <p class="eyebrow text-gold">${esc(longDate())}</p>
-      <h1 class="mt-2 text-[30px] sm:text-4xl lg:text-5xl font-black tracking-tight uppercase leading-[1.05]">Ką nuveiksi šiandien${p.name ? `, <span class="whitespace-nowrap">${esc(p.name.split(' ')[0])}</span>` : ''}?</h1>
-    </section>
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
       <div class="lg:col-span-7">${levelCard(st)}</div>
       <div class="lg:col-span-5">${stats(st)}</div>

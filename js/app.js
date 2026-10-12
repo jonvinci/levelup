@@ -189,11 +189,13 @@ LU.app = (() => {
   /** Pažymėti / atšaukti užduotį (naudojama keliuose ekranuose). */
   LU.actions.toggle = (el) => {
     const id = el.dataset.id;
+    // ta pati užduotis gali būti ir misijose, ir įpročiuose – „+XP" rodom ten, kur paspausta
+    const rect = (el.querySelector('.chk') || el).getBoundingClientRect();
+    const anchor = { getBoundingClientRect: () => rect };
     app.justToggled = id;
     const res = S.toggleTask(id);
     if (!res) return;
     if (navigator.vibrate) navigator.vibrate(res.done ? 15 : 8);
-    const anchor = document.querySelector(`[data-id="${id}"] .chk`) || document.querySelector(`[data-id="${id}"]`);
     LU.ui.xpFloat(`${res.xp > 0 ? '+' : ''}${res.xp} XP`, anchor, res.xp < 0);
     if (res.bonus > 0) {
       setTimeout(() => LU.ui.toast(`Visos misijos atliktos! +${res.bonus} XP premija`, { icon: 'sparkles', ms: 3200 }), 350);
