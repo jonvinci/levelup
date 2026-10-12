@@ -58,7 +58,7 @@ LU.screens.home = (() => {
         </span>
         <span class="flex-1 min-w-0">
           <span class="block text-2xl font-extrabold truncate">${esc(p.name)}</span>
-          <span class="block text-gold font-bold mt-0.5">Lygis ${li.level} · ${esc(li.title.name)}</span>
+          <span class="block text-gold font-bold mt-0.5">Lygis ${li.level}</span>
           <span class="block text-muted text-sm mt-1">Peržiūrėti profilį</span>
         </span>
         <span class="text-gold group-hover:translate-x-1 transition">${icon('chevron-right', 'w-6 h-6')}</span>
