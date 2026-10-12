@@ -20,6 +20,7 @@ LU.ui = (() => {
     const { today, addDays, parseKey } = LU.store.util;
     if (key === today()) return 'Šiandien';
     if (key === addDays(today(), -1)) return 'Vakar';
+    if (key === addDays(today(), 1)) return 'Rytoj';
     const d = parseKey(key);
     const y = d.getFullYear() !== new Date().getFullYear() ? `${d.getFullYear()} m. ` : '';
     return `${y}${MONTHS_GEN[d.getMonth()]} ${d.getDate()} d.`;

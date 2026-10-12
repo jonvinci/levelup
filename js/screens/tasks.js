@@ -80,7 +80,7 @@ LU.screens.tasks = (() => {
   function openForm(task, preset = {}) {
     const today = S.util.today();
     const f = task
-      ? { ...task, days: [...task.days], date: task.date || today }
+      ? { ...task, days: [...task.days], date: task.date && task.date > today ? task.date : today }
       : { title: '', note: '', icon: 'target', type: preset.type || 'once', days: [1, 2, 3, 4, 5, 6, 7], date: today };
     // Tipas nustatomas pagal vietą, iš kur kuriama (misijos/užduotys – vienkartinė, įpročiai – įprotis).
     // Užduočiai – tik tekstas; įpročiui – dar trukmė, savaitės dienos ir ikona. XP visada vienodas (C.TASK_XP).
@@ -94,6 +94,11 @@ LU.screens.tasks = (() => {
           <input id="tf-title" name="title" class="field" maxlength="80" placeholder="${isHabit ? 'pvz. Ryto bėgimas' : 'Ką reikia padaryti?'}" value="${esc(f.title)}" autofocus enterkeyhint="done">
           <p data-err class="hidden mt-2 text-sm text-red-400">Įrašyk pavadinimą.</p>
         </div>
+        ${!isHabit ? `
+        <div class="grid grid-cols-2 gap-2" role="group" aria-label="Kada">
+          <button type="button" data-when="today" class="day-opt h-11 rounded-xl border text-sm font-bold transition">Šiandien</button>
+          <button type="button" data-when="tomorrow" class="day-opt h-11 rounded-xl border text-sm font-bold transition">Rytoj</button>
+        </div>` : ''}
         ${isHabit ? `
         <div>
           <label class="label" for="tf-note">Trukmė / pastaba <span class="normal-case tracking-normal font-medium text-dim">(nebūtina)</span></label>
@@ -135,7 +140,9 @@ LU.screens.tasks = (() => {
         const off = 'bg-well border-line text-white/70';
         const setCls = (b, active) => { b.className = b.className.replace(/\b(bg-gold\/15|border-gold\/60|text-gold|bg-well|border-line|text-white\/70)\b/g, '').trim() + ' ' + (active ? on : off); };
 
+        const tomorrow = S.util.addDays(today, 1);
         function paint() {
+          el.querySelectorAll('[data-when]').forEach((b) => setCls(b, (b.dataset.when === 'tomorrow') === (f.date === tomorrow)));
           el.querySelectorAll('[data-day]').forEach((b) => setCls(b, f.days.includes(Number(b.dataset.day))));
           el.querySelectorAll('[data-icon]').forEach((b) => setCls(b, b.dataset.icon === f.icon));
         }
@@ -150,7 +157,8 @@ LU.screens.tasks = (() => {
         el.addEventListener('click', (e) => {
           const b = e.target.closest('button');
           if (!b) return;
-          if (b.dataset.day) {
+          if (b.dataset.when) f.date = b.dataset.when === 'tomorrow' ? tomorrow : today;
+          else if (b.dataset.day) {
             const n = Number(b.dataset.day);
             f.days = f.days.includes(n) ? f.days.filter((x) => x !== n) : [...f.days, n].sort();
           } else if (b.dataset.preset) f.days = b.dataset.preset.split(',').map(Number);
@@ -180,7 +188,7 @@ LU.screens.tasks = (() => {
             toast(isHabit ? 'Įprotis atnaujintas' : 'Užduotis atnaujinta', { icon: 'check' });
           } else {
             S.addTask(f);
-            toast(isHabit ? 'Įprotis sukurtas' : 'Užduotis pridėta', { icon: 'plus' });
+            toast(isHabit ? 'Įprotis sukurtas' : f.date === tomorrow ? 'Užduotis pridėta rytojui' : 'Užduotis pridėta', { icon: 'plus' });
           }
           close();
         });
