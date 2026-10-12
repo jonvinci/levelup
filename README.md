@@ -26,14 +26,15 @@ Atsidaryk nuorodą telefone. Android'e (Chrome) pasirink ⋮ → „Įdiegti pro
 | Ką | Kur |
 |---|---|
 | Programėlės pavadinimas | `APP_NAME` (taip pat `<title>` faile `index.html` ir `manifest.webmanifest`) |
-| XP kreivė | `xpToNext(n)` – viena funkcija, kiek XP reikia iš lygio *n* į *n+1* |
+| XP kreivė | `DAYS_TO_CHAMPION` (365), `DAILY_XP` (55), `CHAMPION_LEVEL` (45) – kreivė persiskaičiuoja pati; forma – `curveShape(n)` |
 | Premija už visas dienos misijas | `ALL_DONE_BONUS` |
+| XP už misiją / įprotį | `TASK_XP` (5) |
 | Titulai ir jų aprašymai | `TITLES` |
 | Lygių ikonų ciklas | `LEVEL_ICONS` |
 | Pasiekimai | `ACHIEVEMENTS` (kiekvienas turi `check(stats)` funkciją) |
 | Užduočių ikonos, pradinės užduotys | `TASK_ICONS`, `SEED_TASKS` |
 
-Dabartinė kreivė: 6→7 lygis = 50 XP, 10→11 = 78 XP, 20→21 = 218 XP, iki 50 lygio iš viso ≈ 20 800 XP. Darant 4 užduotis per dieną, tai apie 10 mėnesių.
+Dabartinė kreivė: kasdien atliekant viską (~55 XP/d.) Čempionu (45 lygis) tampi per 365 dienas, 10 lygį pasieki per ~10 d., 25 – per ~2,5 mėn., 50 – per ~16 mėn.
 
 ## Struktūra
 

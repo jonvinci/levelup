@@ -70,8 +70,7 @@ LU.screens.levels = (() => {
   function path(li, size) {
     const M = size === 'lg'
       ? { perRow: 5, rowH: 168, top: 56, node: 58, cur: 88, seg: 10, num: 'w-6 h-6 text-[11px]', ico: 'w-6 h-6', icoCur: 'w-9 h-9', lbl: 'text-xs', gap: 10 }
-      // telefone – 3 per eilę ir stambesni mazgai, kad takas būtų „priartintas"
-      : { perRow: 3, rowH: 150, top: 56, node: 66, cur: 92, seg: 10, num: 'w-7 h-7 text-xs', ico: 'w-7 h-7', icoCur: 'w-10 h-10', lbl: 'text-[13px]', gap: 10 };
+      : { perRow: 5, rowH: 116, top: 44, node: 42, cur: 60, seg: 7, num: 'w-[18px] h-[18px] text-[9px]', ico: 'w-[18px] h-[18px]', icoCur: 'w-7 h-7', lbl: 'text-[9px]', gap: 6 };
     const PER_ROW = M.perRow;
     const rows = Math.ceil(C.MAX_LEVEL / PER_ROW);
     const height = M.top + (rows - 1) * M.rowH + 70;

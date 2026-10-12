@@ -7,18 +7,34 @@ LU.screens = LU.screens || {};
 
 LU.config = {
   APP_NAME: 'LEVEL UP',
-  VERSION: '1.1.12',
+  VERSION: '1.2.0',
 
   // ---------------- XP KREIVĖ ----------------
   MAX_LEVEL: 50,
+
   /**
-   * Kiek XP reikia pereiti iš lygio `n` į lygį `n + 1`.
-   * Dabar: 1→2 = 25 XP, kiekvienas lygis +5 XP, o nuo 6 lygio kreivė dar ir lenkiasi (kvadratinis narys).
-   *   6→7 = 50 XP · 10→11 = 78 XP · 20→21 = 218 XP · 49→50 = 1190 XP · iki 50 lygio ≈ 20 800 XP
-   *   (su 4 užduotimis per dieną ≈ 70 XP/d. – 10 lygis per ~1 sav., 50 lygis per ~10 mėn.)
+   * Kreivė sukalibruota taip, kad, kasdien atliekant viską, Čempionu (CHAMPION_LEVEL)
+   * taptum per DAYS_TO_CHAMPION dienų. DAILY_XP – kiek XP gauni per dieną atlikęs viską:
+   * dabar ~7 misijos/įpročiai × 5 XP + 20 XP premija = 55 XP.
+   * Pakeitus šiuos tris skaičius, visa kreivė persiskaičiuoja automatiškai.
    */
+  CHAMPION_LEVEL: 45,
+  DAYS_TO_CHAMPION: 365,
+  DAILY_XP: 55,
+
+  /** Kreivės forma: pradžioje lygiai greiti, vėliau vis lėtesni (kvadratinis narys). */
+  curveShape(n) {
+    return 25 + 5 * (n - 1) + 0.5 * Math.max(0, n - 6) ** 2;
+  },
+
+  /** Kiek XP reikia pereiti iš lygio `n` į lygį `n + 1`. */
   xpToNext(n) {
-    return 25 + 5 * (n - 1) + Math.round(0.5 * Math.max(0, n - 6) ** 2);
+    if (!this._scale) {
+      let sum = 0;
+      for (let k = 1; k < this.CHAMPION_LEVEL; k++) sum += this.curveShape(k);
+      this._scale = (this.DAYS_TO_CHAMPION * this.DAILY_XP) / sum;
+    }
+    return Math.round(this.curveShape(n) * this._scale);
   },
 
   /** Premija, kai atliktos visos tos dienos misijos. */
