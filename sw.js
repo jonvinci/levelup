@@ -1,6 +1,6 @@
 // Service worker: visa programėlė talpinama kešė, kad veiktų offline.
 // Pakeitus failus – padidink VERSION, kad naršyklė atsisiųstų naujus.
-const VERSION = 'levelup-v1.5.0';
+const VERSION = 'levelup-v1.5.1';
 const ASSETS = [
   './',
   './index.html',
