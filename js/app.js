@@ -39,7 +39,7 @@ LU.app = (() => {
     const big = size === 'lg' ? 'text-4xl' : 'text-[22px] lg:text-[26px]';
     return `<a href="#/" class="inline-flex flex-col leading-none select-none" aria-label="${esc(LU.config.APP_NAME)}">
       <span class="${big} font-black tracking-tight">${esc(words.join(' '))}${words.length ? ' ' : ''}<span class="text-gold">${esc(last)}</span></span>
-      <span class="mt-1 ${size === 'lg' ? 'text-[11px]' : 'text-[8px] lg:text-[9px]'} font-bold tracking-[0.42em] text-gold">ĮPROČIŲ ŽAIDIMAS</span>
+      ${size === 'lg' ? '<span class="mt-1 text-[11px] font-bold tracking-[0.42em] text-gold">ĮPROČIŲ ŽAIDIMAS</span>' : ''}
     </a>`;
   }
 
