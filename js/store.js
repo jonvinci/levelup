@@ -36,7 +36,14 @@ LU.store = (() => {
   const parseKey = (k) => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
   const addDays = (k, n) => { const d = parseKey(k); d.setDate(d.getDate() + n); return dateKey(d); };
   const weekday = (k) => ((parseKey(k).getDay() + 6) % 7) + 1;
-  const today = () => dateKey();
+  /** „Šiandiena" programėlės prasme: nauja diena prasideda C.DAY_RESET (pvz. 23:59) vietos laiku. */
+  function today() {
+    const [h, m] = String(C.DAY_RESET || '00:00').split(':').map(Number);
+    const resetMin = (h * 60 + m) % 1440;
+    if (!resetMin) return dateKey();
+    // pastumiam laiką į priekį tiek, kiek trūksta iki vidurnakčio, kad nuo reset laiko jau būtų kita data
+    return dateKey(new Date(Date.now() + (1440 - resetMin) * 60000));
+  }
 
   function emptyState() {
     return {

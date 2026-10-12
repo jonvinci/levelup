@@ -7,7 +7,7 @@ LU.screens = LU.screens || {};
 
 LU.config = {
   APP_NAME: 'LEVEL UP',
-  VERSION: '1.6.1',
+  VERSION: '1.6.2',
 
   // ---------------- XP KREIVĖ ----------------
   MAX_LEVEL: 50,
@@ -39,6 +39,12 @@ LU.config = {
 
   /** Premija, kai atliktos visos tos dienos misijos. */
   ALL_DONE_BONUS: 20,
+
+  /**
+   * Kada prasideda nauja diena (įpročiai atsinaujina, vienkartinės užduotys persikelia).
+   * '23:59' – nauja diena prasideda 23:59 vietos laiku. Serija nenutrūksta, jei vakar buvo kas nors atlikta.
+   */
+  DAY_RESET: '23:59',
 
   /** Kiek XP duoda kiekviena atlikta misija ir įprotis. */
   TASK_XP: 5,
