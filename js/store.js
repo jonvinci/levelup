@@ -133,6 +133,7 @@ LU.store = (() => {
       days: data.type === 'once' ? [] : (data.days && data.days.length ? data.days : [1, 2, 3, 4, 5, 6, 7]),
       date: data.type === 'once' ? (data.date || today()) : null, doneDate: null,
       createdKey: today(), createdAt: new Date().toISOString(), order,
+      important: data.type === 'once' && !!data.important,
     };
     state.tasks.push(task);
     if (!silent) { syncBonus(today()); commit(); }
@@ -150,6 +151,7 @@ LU.store = (() => {
     t.date = t.type === 'once' ? (data.date || t.date || today()) : null;
     if (t.type === 'habit') t.doneDate = null;
     t.xp = C.TASK_XP;
+    if (t.type === 'once' && 'important' in data) t.important = !!data.important;
     syncBonus(today());
     commit();
   }

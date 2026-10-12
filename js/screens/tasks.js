@@ -31,6 +31,7 @@ LU.screens.tasks = (() => {
           ${status}
         </p>
       </button>
+      ${t.type === 'once' && !t.doneDate ? `<button data-action="star" data-id="${t.id}" class="icon-btn w-10 h-10 ${t.important ? '!text-gold' : ''}" aria-pressed="${!!t.important}" aria-label="${t.important ? 'Nebežymėti kaip svarbios' : 'Pažymėti kaip svarbią'}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${t.important ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" class="w-4 h-4">${LU.ICONS.star}</svg></button>` : ''}
       <button data-action="edit-task" data-id="${t.id}" class="icon-btn w-10 h-10" aria-label="Redaguoti">${icon('pencil', 'w-4 h-4')}</button>
       <button data-action="delete-task" data-id="${t.id}" class="icon-btn w-10 h-10 hover:text-red-400" aria-label="Ištrinti">${icon('trash-2', 'w-4 h-4')}</button>
     </div>`;
@@ -98,7 +99,10 @@ LU.screens.tasks = (() => {
         <div class="grid grid-cols-2 gap-2" role="group" aria-label="Kada">
           <button type="button" data-when="today" class="day-opt h-11 rounded-xl border text-sm font-bold transition">Šiandien</button>
           <button type="button" data-when="tomorrow" class="day-opt h-11 rounded-xl border text-sm font-bold transition">Rytoj</button>
-        </div>` : ''}
+        </div>
+        <button type="button" data-important class="day-opt w-full h-11 rounded-xl border text-sm font-bold transition inline-flex items-center justify-center gap-2">
+          <span data-star-ico></span> Svarbi užduotis
+        </button>` : ''}
         ${isHabit ? `
         <div>
           <label class="label" for="tf-note">Trukmė / pastaba <span class="normal-case tracking-normal font-medium text-dim">(nebūtina)</span></label>
@@ -143,6 +147,11 @@ LU.screens.tasks = (() => {
         const tomorrow = S.util.addDays(today, 1);
         function paint() {
           el.querySelectorAll('[data-when]').forEach((b) => setCls(b, (b.dataset.when === 'tomorrow') === (f.date === tomorrow)));
+          const imp = el.querySelector('[data-important]');
+          if (imp) {
+            setCls(imp, !!f.important);
+            imp.querySelector('[data-star-ico]').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${f.important ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" class="w-[18px] h-[18px]">${LU.ICONS.star}</svg>`;
+          }
           el.querySelectorAll('[data-day]').forEach((b) => setCls(b, f.days.includes(Number(b.dataset.day))));
           el.querySelectorAll('[data-icon]').forEach((b) => setCls(b, b.dataset.icon === f.icon));
         }
@@ -158,6 +167,7 @@ LU.screens.tasks = (() => {
           const b = e.target.closest('button');
           if (!b) return;
           if (b.dataset.when) f.date = b.dataset.when === 'tomorrow' ? tomorrow : today;
+          else if (b.hasAttribute('data-important')) f.important = !f.important;
           else if (b.dataset.day) {
             const n = Number(b.dataset.day);
             f.days = f.days.includes(n) ? f.days.filter((x) => x !== n) : [...f.days, n].sort();
