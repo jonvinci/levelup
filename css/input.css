@@ -33,86 +33,125 @@
 }
 
 @layer components {
-  /* Minimalus stilius: plokščios kortelės be rėmelių, auksinė – tik progresui, pažymėjimams ir pagr. mygtukams */
-  .card { @apply bg-card rounded-2xl; }
-  .card-pad { @apply p-4 sm:p-6; }
-  .h-section { @apply text-[15px] font-semibold; }
-  .page-title { @apply text-2xl font-bold tracking-tight; }
+  .card { @apply bg-card border border-line rounded-4xl; }
+  .card-pad { @apply p-5 sm:p-7; }
+  .card-gold {
+    @apply border border-gold/30 rounded-4xl;
+    background:
+      radial-gradient(120% 140% at 0% 0%, rgba(240, 180, 41, 0.14), transparent 55%),
+      linear-gradient(180deg, #17150F, #121214);
+  }
+  .tile { @apply bg-card border border-line rounded-3xl; }
+  .icon-box { @apply grid place-items-center rounded-2xl bg-card2 border border-line shrink-0; }
+  .icon-box-gold { @apply grid place-items-center rounded-2xl bg-gold/10 border border-gold/30 text-gold shrink-0; }
+  .icon-box-flame { @apply grid place-items-center rounded-2xl bg-flame/15 border border-flame/30 text-flame shrink-0; }
+  .icon-btn { @apply grid place-items-center w-11 h-11 rounded-2xl bg-card2 border border-line text-white/80 hover:text-white hover:border-line2 transition; }
 
-  .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none; }
-  .btn-gold { @apply btn h-12 px-5 bg-gold text-black hover:bg-gold-light; }
-  .btn-ghost { @apply btn h-12 px-5 bg-white/[0.06] text-white hover:bg-white/[0.09]; }
-  .btn-danger { @apply btn h-12 px-5 bg-red-500 text-white hover:bg-red-400; }
-  .btn-sm { @apply h-9 px-3.5 text-sm; }
-  .link { @apply text-sm text-muted hover:text-white transition inline-flex items-center gap-1.5; }
-  .icon-btn { @apply grid place-items-center w-9 h-9 rounded-lg text-white/50 hover:text-white hover:bg-white/[0.05] transition; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-2xl font-bold transition active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none; }
+  .btn-gold { @apply btn h-14 px-6 bg-gold text-black hover:bg-gold-light; }
+  .btn-ghost { @apply btn h-14 px-6 bg-card2 border border-line text-white hover:border-line2; }
+  .btn-danger { @apply btn h-14 px-6 bg-red-500 text-white hover:bg-red-400; }
+  .btn-sm { @apply h-10 px-4 rounded-xl text-sm; }
 
-  .tag { @apply inline-flex items-center rounded-lg bg-white/[0.06] px-2.5 py-1 text-sm text-white/80; }
-  .bar { @apply h-1.5 rounded-full bg-white/[0.08] overflow-hidden; }
+  .chip { @apply inline-flex items-center gap-1.5 rounded-full border border-line2 bg-card2 px-3 py-1.5 text-sm font-medium; }
+  .tag { @apply inline-flex items-center rounded-xl border border-gold/20 bg-gold/[0.06] px-3 py-1.5 text-sm text-white/80; }
+  .pill-gold { @apply inline-flex items-center rounded-full bg-gold text-black text-[10px] font-extrabold tracking-wider px-2.5 py-0.5; }
+  .pill-outline { @apply inline-flex items-center rounded-lg border border-gold/50 bg-gold/10 text-gold text-xs font-extrabold tracking-wider px-2.5 py-1; }
+  .eyebrow { @apply text-xs font-bold tracking-[0.2em] uppercase; }
+
+  .bar { @apply h-2.5 rounded-full bg-white/[0.07] overflow-hidden; }
   .bar > i { @apply block h-full rounded-full bg-gold transition-[width] duration-700 ease-out; }
+  .bar-shine > i { background: linear-gradient(90deg, #D99A0B, #F0B429 40%, #FFE3A1 60%, #F0B429 80%); }
 
-  .field { @apply w-full h-12 rounded-xl bg-white/[0.05] border border-transparent px-4 text-white placeholder:text-dim outline-none focus:border-gold/50 transition; }
+  .field { @apply w-full h-12 rounded-2xl bg-well border border-line2 px-4 text-white placeholder:text-dim outline-none focus:border-gold/60 transition; }
   textarea.field { @apply h-auto py-3; }
-  .label { @apply block text-sm text-muted mb-2; }
-  /* pasirinkimo mygtukai formose (XP, dienos, ikonos) – būsena per aria-pressed */
-  .opt { @apply rounded-xl bg-white/[0.05] text-white/70 font-semibold transition; }
-  .opt[aria-pressed="true"] { @apply bg-gold text-black; }
+  .label { @apply block text-xs font-bold tracking-[0.15em] uppercase text-muted mb-2; }
 
-  .nav-item { @apply flex flex-col items-center gap-1 py-1 text-[11px] font-medium text-white/45; }
+  .nav-item { @apply flex flex-col items-center gap-1 text-[11px] font-semibold text-white/60; }
+  .nav-item .nav-ico { @apply grid place-items-center w-12 h-11 rounded-2xl border border-transparent transition; }
   .nav-item.active { @apply text-gold; }
-  .side-item { @apply relative grid place-items-center w-12 h-12 rounded-xl text-white/45 hover:text-white transition; }
-  .side-item.active { @apply text-gold bg-white/[0.05]; }
-  .side-item .tip { @apply pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-card2 px-2 py-1 text-xs text-white opacity-0 transition; }
-  .side-item:hover .tip { @apply opacity-100; }
+  .nav-item.active .nav-ico { @apply bg-gold/15 border-gold/60; }
 
-  .tab { @apply pb-2 text-sm font-medium text-muted border-b-2 border-transparent transition; }
-  .tab.active { @apply text-white border-gold; }
+  .side-item { @apply relative grid place-items-center w-14 h-14 rounded-2xl text-white/60 hover:text-white hover:bg-white/[0.04] transition; }
+  .side-item.active { @apply text-gold bg-gold/15 border border-gold/50; }
+  .side-item .tip { @apply pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-lg bg-card2 border border-line2 px-2.5 py-1 text-xs font-semibold text-white opacity-0 -translate-x-1 transition; }
+  .side-item:hover .tip { @apply opacity-100 translate-x-0; }
 
-  .list-group { @apply bg-card rounded-2xl overflow-hidden divide-y divide-line; }
-  .list-row { @apply flex w-full items-center gap-3 px-4 py-3.5 text-left hover:bg-white/[0.02] transition; }
+  .seg { @apply inline-flex items-center gap-2 h-10 px-4 rounded-full text-sm font-bold bg-card2 text-white/70 border border-line transition; }
+  .seg.active { @apply bg-gold text-black border-gold; }
+
+  .list-group { @apply bg-card border border-line rounded-3xl overflow-hidden divide-y divide-line; }
+  .list-row { @apply flex w-full items-center gap-4 px-4 sm:px-5 py-4 text-left hover:bg-white/[0.02] transition; }
 }
 
-/* ---------- Pažymėjimas ---------- */
-.mission .chk { transition: background-color .2s, border-color .2s; }
-.mission.just .chk { animation: pop .35s ease-out; }
-.mission.done .m-title { text-decoration: line-through; color: rgba(255,255,255,.4); }
-@keyframes pop { 0% { transform: scale(.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+/* ---------- Misijos ---------- */
+.mission { transition: background-color .25s, border-color .25s, transform .15s; }
+.mission:active { transform: scale(0.99); }
+.mission .chk { transition: background-color .2s, border-color .2s, transform .2s; }
+.mission.done .chk { animation: none; }
+.mission.just .chk { animation: pop .45s cubic-bezier(.2,1.6,.4,1); }
+.mission.done .m-title { text-decoration: line-through; text-decoration-thickness: 1.5px; color: rgba(255,255,255,.45); }
+@keyframes pop { 0% { transform: scale(.6); } 60% { transform: scale(1.18); } 100% { transform: scale(1); } }
 
 /* ---------- XP užrašas ---------- */
 .xp-float {
   position: fixed; z-index: 70; pointer-events: none; transform: translate(-50%, 0);
-  font-weight: 700; font-size: 15px; animation: xpup 1s ease-out forwards;
+  font-weight: 900; font-size: 18px; text-shadow: 0 2px 12px rgba(0,0,0,.6);
+  animation: xpup 1.1s ease-out forwards;
 }
-@keyframes xpup { 0% { opacity: 0; transform: translate(-50%, 4px); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -36px); } }
+@keyframes xpup { 0% { opacity: 0; transform: translate(-50%, 6px) scale(.8); } 15% { opacity: 1; transform: translate(-50%, -6px) scale(1.1); } 100% { opacity: 0; transform: translate(-50%, -54px) scale(1); } }
 
 /* ---------- Toast ---------- */
-.toast { animation: toastin .25s ease-out; }
-.toast-out { opacity: 0; transition: opacity .25s; }
-@keyframes toastin { from { opacity: 0; transform: translateY(-6px); } }
+.toast { animation: toastin .3s cubic-bezier(.2,1.2,.4,1); }
+.toast-out { opacity: 0; transform: translateY(-8px); transition: all .3s; }
+@keyframes toastin { from { opacity: 0; transform: translateY(-12px) scale(.96); } }
 
 /* ---------- Modalai ---------- */
 .modal-wrap .modal-backdrop { animation: fadein .2s ease-out; }
-.modal-wrap .modal-panel { animation: sheetin .25s cubic-bezier(.2,1,.3,1); }
-@media (min-width: 640px) { .modal-wrap .modal-panel { animation: fadein .18s ease-out; } }
-.modal-wrap.closing .modal-backdrop, .modal-wrap.closing .modal-panel { opacity: 0; transition: opacity .18s; }
+.modal-wrap .modal-panel { animation: sheetin .28s cubic-bezier(.2,1,.3,1); }
+@media (min-width: 640px) { .modal-wrap .modal-panel { animation: popin .22s cubic-bezier(.2,1,.3,1); } }
+.modal-wrap.closing .modal-backdrop { opacity: 0; transition: opacity .18s; }
+.modal-wrap.closing .modal-panel { opacity: 0; transform: translateY(24px); transition: all .18s; }
 @keyframes fadein { from { opacity: 0; } }
 @keyframes sheetin { from { transform: translateY(100%); } }
+@keyframes popin { from { opacity: 0; transform: scale(.96) translateY(8px); } }
 
-/* ---------- Lygio pakilimas ---------- */
-.levelup-badge { animation: badgein .5s cubic-bezier(.2,1.4,.4,1) both; }
-@keyframes badgein { from { transform: scale(.6); opacity: 0; } }
+/* ---------- Lygio šventė ---------- */
+.levelup-rays {
+  position: absolute; left: 50%; top: 120px; width: 520px; height: 520px; margin: -260px 0 0 -260px;
+  background: repeating-conic-gradient(from 0deg, rgba(240,180,41,.10) 0 8deg, transparent 8deg 22deg);
+  border-radius: 50%; mask-image: radial-gradient(circle, #000 20%, transparent 65%);
+  -webkit-mask-image: radial-gradient(circle, #000 20%, transparent 65%);
+  animation: spin 18s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.levelup-badge { animation: badgein .7s cubic-bezier(.2,1.5,.4,1) both; }
+@keyframes badgein { 0% { transform: scale(.2) rotate(-25deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+.sparks { position: absolute; inset: 50%; }
+.sparks i {
+  position: absolute; width: 7px; height: 7px; border-radius: 2px; background: #F0B429; opacity: 0;
+  animation: spark 1.1s ease-out var(--d) forwards;
+}
+.sparks i:nth-child(3n) { background: #fff; width: 5px; height: 5px; }
+.sparks i:nth-child(4n) { background: #F97316; }
+@keyframes spark { 0% { opacity: 1; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.4) rotate(180deg); } }
 
 /* ---------- Lygių takas ---------- */
-.path-node { transition: transform .15s; }
-.path-node:hover { transform: translate(-50%, -50%) scale(1.04); }
-.path-node.reached { background: #F0B429; color: #111; }
-.path-node.current { background: #F0B429; color: #111; box-shadow: 0 0 0 3px #0A0A0B, 0 0 0 5px #fff; }
-.path-node.future { background: #1C1C1F; color: rgba(255,255,255,.4); }
-.path-node.selected { box-shadow: 0 0 0 3px #0A0A0B, 0 0 0 5px rgba(240,180,41,.6); }
-.path-seg { position: absolute; background: #222225; border-radius: 99px; }
-.path-seg.gold { background: #F0B429; }
+.path-node { transition: transform .2s; }
+.path-node:hover { transform: translate(-50%, -50%) scale(1.06); }
+.path-node.reached { background: linear-gradient(145deg, #FFD36B, #F0B429 55%, #D99A0B); color: #111; box-shadow: 0 0 22px rgba(240,180,41,.55); }
+.path-node.current { background: linear-gradient(145deg, #FFE08A, #F5C13E 50%, #E0A214); color: #111; box-shadow: 0 0 0 4px #fff, 0 0 40px rgba(240,180,41,.65); }
+.path-node.future { background: #18181B; border: 1px solid rgba(255,255,255,.1); color: rgba(255,255,255,.55); }
+.path-node.selected { outline: 2px dashed rgba(240,180,41,.8); outline-offset: 5px; }
+.path-seg { position: absolute; background: #222226; border-radius: 99px; }
+.path-seg.gold { background: #F0B429; box-shadow: 0 0 14px rgba(240,180,41,.55); }
 
-.fade-in { animation: fadein .25s ease-out both; }
+/* Glow animacija dabartiniam mazgui */
+.pulse-gold { animation: pulsegold 2.4s ease-in-out infinite; }
+@keyframes pulsegold { 0%,100% { box-shadow: 0 0 0 4px #fff, 0 0 26px rgba(240,180,41,.45); } 50% { box-shadow: 0 0 0 4px #fff, 0 0 52px rgba(240,180,41,.8); } }
+
+.fade-in { animation: fadeup .35s ease-out both; }
+@keyframes fadeup { from { opacity: 0; transform: translateY(6px); } }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }

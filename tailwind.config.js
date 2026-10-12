@@ -5,10 +5,10 @@ module.exports = {
     extend: {
       colors: {
         bg: '#0A0A0B',
-        card: '#141416',
+        card: '#121214',
         card2: '#18181B',
         well: '#0D0D0F',
-        line: 'rgba(255,255,255,0.06)',
+        line: 'rgba(255,255,255,0.07)',
         line2: 'rgba(255,255,255,0.12)',
         gold: { DEFAULT: '#F0B429', light: '#FFD36B', dark: '#C98D0B' },
         flame: '#F97316',
