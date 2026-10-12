@@ -41,27 +41,28 @@ LU.screens.home = (() => {
     </a>`;
   }
 
-  /** Misijos žymė: tuščia žvaigždutė, atlikus – užpildyta auksinė. */
-  function star(done) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${done ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round" class="w-7 h-7 ${done ? 'text-gold drop-shadow-[0_0_6px_rgba(240,180,41,0.45)]' : 'text-white/35'}" aria-hidden="true">${LU.ICONS.star}</svg>`;
+  /** „Svarbi" žvaigždutė: tuščia, pažymėjus – auksinė. Atlikimui ir XP įtakos neturi. */
+  function star(on) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${on ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" class="w-[18px] h-[18px]" aria-hidden="true">${LU.ICONS.star}</svg>`;
   }
 
   function missionRow(d) {
     const t = d.task;
     const just = LU.app.justToggled === t.id;
+    // Visa eilutė pažymi atlikimą; žvaigždutė (atskiras mygtukas) – tik „svarbi"
     return `
     <li>
-      <button data-action="toggle" data-id="${t.id}" class="mission ${d.done ? 'done' : ''} ${just ? 'just' : ''} w-full flex items-center gap-2.5 sm:gap-3 rounded-2xl border px-3 sm:px-4 py-3.5 text-left ${d.done ? 'bg-gold/[0.07] border-gold/25' : 'bg-well border-line hover:border-line2'}" aria-pressed="${d.done}">
-        <span class="chk w-7 h-7 grid place-items-center shrink-0">${star(d.done)}</span>
+      <div role="button" tabindex="0" data-action="toggle" data-id="${t.id}" class="mission ${d.done ? 'done' : ''} ${just ? 'just' : ''} cursor-pointer w-full flex items-center gap-2.5 sm:gap-3 rounded-2xl border px-3 sm:px-4 py-3.5 text-left ${d.done ? 'bg-gold/[0.07] border-gold/25' : t.important ? 'bg-well border-gold/30' : 'bg-well border-line hover:border-line2'}" aria-pressed="${d.done}">
+        <span class="chk w-7 h-7 rounded-full grid place-items-center shrink-0 ${d.done ? 'bg-gold text-black' : 'border-2 border-white/20'}">${d.done ? icon('check', 'w-4 h-4', 3) : ''}</span>
         <span class="flex-1 min-w-0">
           <span class="m-title block font-semibold leading-snug text-[15px] sm:text-base">${esc(t.title)}${t.note ? ` – ${esc(t.note)}` : ''}</span>
           ${d.carried ? `<span class="block text-xs text-flame mt-0.5">Perkelta iš ${dayLabel(t.date).toLowerCase()}</span>` : ''}
         </span>
-        <span class="${d.done ? 'text-white/50' : 'text-white/60'} shrink-0">${icon(t.icon, 'w-[18px] h-[18px] sm:w-5 sm:h-5')}</span>
+        <button data-action="star" data-id="${t.id}" class="shrink-0 -m-1.5 p-1.5 rounded-lg ${t.important ? 'text-gold' : 'text-white/30 hover:text-white/60'}" aria-pressed="${!!t.important}" aria-label="${t.important ? 'Nebežymėti kaip svarbios' : 'Pažymėti kaip svarbią'}">${star(t.important)}</button>
         ${d.done
           ? `<span class="shrink-0 inline-flex items-center gap-1 rounded-lg bg-gold/15 text-gold text-sm font-bold px-2 py-1 tabular-nums">${icon('check', 'w-3.5 h-3.5', 3)}${time(d.doneAt)}</span>`
           : `<span class="shrink-0 rounded-lg border border-gold/25 text-gold/90 text-xs font-bold px-2 py-1 tabular-nums">+${t.xp} XP</span>`}
-      </button>
+      </div>
     </li>`;
   }
 
@@ -69,7 +70,8 @@ LU.screens.home = (() => {
     // Dienos pažanga ir premija skaičiuojamos iš visko (užduotys + šiandienos įpročiai),
     // bet sąraše rodomos tik vienkartinės užduotys – įpročiai yra „Mano įpročiai" kortelėje.
     const all = S.dueTasks();
-    const due = all.filter((d) => d.task.type === 'once');
+    // svarbios (su žvaigždute) – viršuje, kitaip išlaikoma įprasta tvarka
+    const due = all.filter((d) => d.task.type === 'once').sort((a, b) => !!b.task.important - !!a.task.important);
     const done = all.filter((d) => d.done).length;
     const allDone = all.length && done === all.length;
     return `
@@ -141,6 +143,11 @@ LU.screens.home = (() => {
       <div class="lg:col-span-5 lg:self-start">${habits()}</div>
     </div>`;
   }
+
+  LU.actions.star = (el) => {
+    const on = S.toggleImportant(el.dataset.id);
+    LU.ui.toast(on ? 'Pažymėta kaip svarbi' : 'Nebežymima kaip svarbi', { icon: 'star', ms: 1600 });
+  };
 
   LU.actions['scroll-habits'] = () => {
     const el = document.getElementById('habits-card');

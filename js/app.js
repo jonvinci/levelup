@@ -208,6 +208,11 @@ LU.app = (() => {
   };
 
   document.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[role=button][data-action]')) {
+      e.preventDefault();
+      e.target.click();
+      return;
+    }
     if (e.key !== 'Escape') return;
     if (LU.ui.closeTopModal()) return;
     if (app.bellOpen) { app.bellOpen = false; render(); }

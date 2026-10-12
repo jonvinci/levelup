@@ -196,6 +196,15 @@ LU.store = (() => {
     return res;
   }
 
+  /** Pažymi / nuima „svarbi" žymę (žvaigždutė). XP ir atlikimui įtakos neturi. Grąžina naują būseną. */
+  function toggleImportant(id) {
+    const t = state.tasks.find((x) => x.id === id);
+    if (!t) return false;
+    t.important = !t.important;
+    commit();
+    return t.important;
+  }
+
   /** Užtikrina, kad „visos misijos atliktos" premija atitiktų dabartinę būseną. Grąžina XP pokytį. */
   function syncBonus(date) {
     const due = dueTasks(date);
@@ -436,7 +445,7 @@ LU.store = (() => {
     get state() { return state; },
     load, save, flush, commit, subscribe,
     createProfile, updateProfile, touchDay,
-    dueTasks, addTask, updateTask, deleteTask, toggleTask, syncBonus,
+    dueTasks, addTask, updateTask, deleteTask, toggleTask, toggleImportant, syncBonus,
     totalXp, levelInfo, levelStartXp, titleFor, levelIcon, stats,
     habitHistory, habitStreak, checkAchievements,
     unreadCount, markAllRead,
