@@ -33,7 +33,7 @@ LU.screens.menu = (() => {
         <h1 class="inline-block text-4xl sm:text-5xl font-black pb-2 border-b-4 border-gold">Meniu</h1>
       </div>
 
-      ${LU.screens.home.levelCard(S.stats())}
+      ${LU.screens.home.profileCard()}
 
       ${section('Žaidimas', [
         { href: '#/uzduotys', ic: 'list-checks', title: 'Užduotys ir įpročiai' },

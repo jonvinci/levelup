@@ -46,7 +46,7 @@ LU.screens.home = (() => {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${on ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" class="w-[18px] h-[18px]" aria-hidden="true">${LU.ICONS.star}</svg>`;
   }
 
-  /** Profilio kortelė (avataras su lygio žiedu, vardas, lygis) – pagrindinio ekrano viršuje. */
+  /** Profilio kortelė (avataras su lygio žiedu, vardas, lygis) – Meniu viršuje. */
   function profileCard() {
     const p = S.state.profile;
     const li = S.levelInfo();
@@ -144,7 +144,7 @@ LU.screens.home = (() => {
   function render() {
     return `
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
-      <div class="lg:col-span-12">${profileCard()}</div>
+      <div class="lg:col-span-12">${levelCard(S.stats())}</div>
       <div class="lg:col-span-7 lg:self-start">${missions()}</div>
       <div class="lg:col-span-5 lg:self-start">${habits()}</div>
     </div>`;
@@ -160,5 +160,5 @@ LU.screens.home = (() => {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  return { render, levelCard };
+  return { render, levelCard, profileCard };
 })();
