@@ -41,26 +41,6 @@ LU.screens.home = (() => {
     </a>`;
   }
 
-  function statTile(iconHtml, value, labelShort, labelLong) {
-    return `
-    <div class="tile px-2 py-4 lg:p-5 flex flex-col items-center lg:items-start text-center lg:text-left">
-      ${iconHtml}
-      <div class="mt-2.5 lg:mt-4 text-[22px] lg:text-[30px] font-black leading-none tabular-nums">${value}</div>
-      <div class="mt-1.5 text-[12px] lg:text-sm text-white/70 font-medium leading-tight"><span class="lg:hidden">${labelShort}</span><span class="hidden lg:inline">${labelLong}</span></div>
-    </div>`;
-  }
-
-  function stats(st) {
-    const box = 'w-10 h-10 lg:w-12 lg:h-12 rounded-xl lg:rounded-2xl';
-    return `
-    <div class="grid grid-cols-4 lg:grid-cols-2 gap-2.5 lg:gap-4">
-      ${statTile(`<div class="icon-box-gold ${box}">${icon('zap', 'w-5 h-5 lg:w-6 lg:h-6')}</div>`, fmt(st.totalXp), 'XP', 'Surinkta XP')}
-      ${statTile(`<div class="${st.streak ? 'icon-box-flame' : 'icon-box text-white/40'} ${box}">${icon('flame', 'w-5 h-5 lg:w-6 lg:h-6')}</div>`, st.streak, 'Serija', `Serija · ${LU.ui.plural(st.streak, 'diena', 'dienos', 'dienų')} iš eilės`)}
-      ${statTile(`<div class="icon-box ${box}">${icon('check-check', 'w-5 h-5 lg:w-6 lg:h-6')}</div>`, fmt(st.tasksDone), 'Atlikta', 'Atliktos užduotys')}
-      ${statTile(`<div class="icon-box-gold ${box}">${icon('calendar-days', 'w-5 h-5 lg:w-6 lg:h-6')}</div>`, st.activeDays, 'Dienos', 'Dienos su app\'u')}
-    </div>`;
-  }
-
   function missionRow(d) {
     const t = d.task;
     const just = LU.app.justToggled === t.id;
@@ -156,8 +136,7 @@ LU.screens.home = (() => {
     const st = S.stats();
     return `
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
-      <div class="lg:col-span-7">${levelCard(st)}</div>
-      <div class="lg:col-span-5">${stats(st)}</div>
+      <div class="lg:col-span-12">${levelCard(st)}</div>
       <div class="lg:col-span-7 lg:self-start">${missions()}</div>
       <div class="lg:col-span-5 lg:self-start">${habits()}</div>
     </div>`;
