@@ -33,18 +33,7 @@ LU.screens.menu = (() => {
         <h1 class="inline-block text-4xl sm:text-5xl font-black pb-2 border-b-4 border-gold">Meniu</h1>
       </div>
 
-      <a href="#/profilis" class="card-gold flex items-center gap-5 p-5 sm:p-6 group">
-        <span class="relative w-[92px] h-[92px] shrink-0">
-          ${ring(li.pct, 92, 5)}
-          <span class="absolute inset-[9px]">${avatar(p, 'w-full h-full text-2xl')}</span>
-        </span>
-        <span class="flex-1 min-w-0">
-          <span class="block text-2xl font-extrabold truncate">${esc(p.name)}</span>
-          <span class="block text-gold font-bold mt-0.5">Lygis ${li.level} · ${esc(li.title.name)}</span>
-          <span class="block text-muted text-sm mt-1">Peržiūrėti profilį</span>
-        </span>
-        <span class="text-gold group-hover:translate-x-1 transition">${icon('chevron-right', 'w-6 h-6')}</span>
-      </a>
+      ${LU.screens.home.levelCard(S.stats())}
 
       ${section('Žaidimas', [
         { href: '#/uzduotys', ic: 'list-checks', title: 'Užduotys ir įpročiai' },

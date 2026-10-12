@@ -3,7 +3,7 @@ window.LU = window.LU || {};
 LU.screens = LU.screens || {};
 
 LU.screens.home = (() => {
-  const { icon, esc, fmt, ring, scheduleText, dayLabel } = LU.ui;
+  const { icon, esc, fmt, ring, avatar, scheduleText, dayLabel } = LU.ui;
   const S = LU.store;
 
   function levelCard(st) {
@@ -44,6 +44,25 @@ LU.screens.home = (() => {
   /** „Svarbi" žvaigždutė: tuščia, pažymėjus – auksinė. Atlikimui ir XP įtakos neturi. */
   function star(on) {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${on ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" class="w-[18px] h-[18px]" aria-hidden="true">${LU.ICONS.star}</svg>`;
+  }
+
+  /** Profilio kortelė (avataras su lygio žiedu, vardas, lygis) – pagrindinio ekrano viršuje. */
+  function profileCard() {
+    const p = S.state.profile;
+    const li = S.levelInfo();
+    return `
+      <a href="#/profilis" class="card-gold flex items-center gap-5 p-5 sm:p-6 group">
+        <span class="relative w-[92px] h-[92px] shrink-0">
+          ${ring(li.pct, 92, 5)}
+          <span class="absolute inset-[9px]">${avatar(p, 'w-full h-full text-2xl')}</span>
+        </span>
+        <span class="flex-1 min-w-0">
+          <span class="block text-2xl font-extrabold truncate">${esc(p.name)}</span>
+          <span class="block text-gold font-bold mt-0.5">Lygis ${li.level} · ${esc(li.title.name)}</span>
+          <span class="block text-muted text-sm mt-1">Peržiūrėti profilį</span>
+        </span>
+        <span class="text-gold group-hover:translate-x-1 transition">${icon('chevron-right', 'w-6 h-6')}</span>
+      </a>`;
   }
 
   function missionRow(d) {
@@ -123,10 +142,9 @@ LU.screens.home = (() => {
   }
 
   function render() {
-    const st = S.stats();
     return `
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
-      <div class="lg:col-span-12">${levelCard(st)}</div>
+      <div class="lg:col-span-12">${profileCard()}</div>
       <div class="lg:col-span-7 lg:self-start">${missions()}</div>
       <div class="lg:col-span-5 lg:self-start">${habits()}</div>
     </div>`;
@@ -142,5 +160,5 @@ LU.screens.home = (() => {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  return { render };
+  return { render, levelCard };
 })();
