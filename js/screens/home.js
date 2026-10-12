@@ -85,11 +85,9 @@ LU.screens.home = (() => {
     // bet sąraše rodomos tik vienkartinės užduotys – įpročiai yra „Mano įpročiai" kortelėje.
     const all = S.dueTasks();
     const due = all.filter((d) => d.task.type === 'once');
-    const habitsDue = all.filter((d) => d.task.type === 'habit');
     const done = all.filter((d) => d.done).length;
     const pct = all.length ? Math.round((done / all.length) * 100) : 0;
     const allDone = all.length && done === all.length;
-    const cnt = (list) => `${list.filter((d) => d.done).length}/${list.length}`;
     return `
     <section class="card card-pad">
       <div class="flex items-center gap-3">
@@ -100,14 +98,7 @@ LU.screens.home = (() => {
           <span class="ml-2 text-gold font-extrabold">${pct} %</span>
         </div>
       </div>
-      ${allDone
-        ? `<p class="mt-4 text-gold font-semibold flex items-center gap-2">Visos užduotys atliktos. Šaunuolis! <span class="pill-outline text-[10px] py-0.5">+${LU.config.ALL_DONE_BONUS} XP</span></p>`
-        : `<p class="mt-4 text-sm text-muted">${all.length ? `Atlik šiandienos užduotis ir įpročius – gausi <b class="text-gold">+${LU.config.ALL_DONE_BONUS} XP</b> premiją.` : 'Šiandien misijų nėra.'}</p>`}
-      <div class="bar mt-4"><i style="width:${pct}%"></i></div>
-      <div class="mt-4 flex flex-wrap gap-2">
-        <span class="chip !text-xs">${icon('list-checks', 'w-3.5 h-3.5 text-gold')} Užduotys ${cnt(due)}</span>
-        <button data-action="scroll-habits" class="chip !text-xs hover:border-gold/40">${icon('repeat', 'w-3.5 h-3.5 text-gold')} Įpročiai ${cnt(habitsDue)} ${icon('chevron-down', 'w-3.5 h-3.5 text-muted')}</button>
-      </div>
+      ${allDone ? `<p class="mt-4 text-gold font-semibold flex items-center gap-2">Visos užduotys atliktos. Šaunuolis! <span class="pill-outline text-[10px] py-0.5">+${LU.config.ALL_DONE_BONUS} XP</span></p>` : ''}
       ${due.length ? `<ul class="mt-4 space-y-2.5">${due.map(missionRow).join('')}</ul>` : `
         <div class="mt-4 rounded-2xl border border-dashed border-line2 p-5 text-center">
           <p class="text-white/70 text-sm">Šiandien vienkartinių užduočių nėra.</p>
