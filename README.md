@@ -59,7 +59,7 @@ scripts/build-icons.js  generuoja js/icons.js
 
 - **XP**: apskaičiuojamas kaip `xpLog` įrašų suma. Atšaukus užduotį, jos įrašas ištrinamas ir XP sumažėja.
 - **Premija**: kai atliktos visos tos dienos misijos, pridedamas `bonus` įrašas. Jei atšauki užduotį ar pridedi naują, premija nuimama, kol vėl atliksi viską.
-- **Serija**: tai dienos iš eilės, kai atlikta bent viena užduotis. Šiandiena seriją nutraukia tik pasibaigusi, o praleista diena ją nunulina.
+- **Serija**: tai dienos iš eilės, kai atliktas įprotis „Įvykdyti svarb. užduotis" (t. y. visos tos dienos užduotys su žvaigždute). Diena be svarbių užduočių seriją nutraukia, šiandiena ją nutraukia tik pasibaigusi.
 - **Diena** keičiasi vidurnaktį pagal vietinį laiką (tikrinama kas 20 s ir grįžus į app'ą). Įpročiai atsinaujina, o neatliktos vienkartinės užduotys persikelia į šiandieną.
 - **Draugai**: profilio kodas `LU1-…` yra base64 su vardu, XP, lygiu, serija ir kontroline suma. Įklijavus to paties draugo naują kodą, jo įrašas atnaujinamas.
 - **Atsarginė kopija**: Meniu → Eksportuoti / Importuoti (JSON).

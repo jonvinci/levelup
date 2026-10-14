@@ -330,7 +330,31 @@ LU.store = (() => {
   // ---------- serijos ir statistika ----------
   const doneDates = () => Object.keys(state.completions).filter((k) => Object.keys(state.completions[k]).length).sort();
 
+  /**
+   * Bendra serija skaičiuojama pagal įprotį „Įvykdyti svarb. užduotis": diena įsiskaito tik tada,
+   * kai tą dieną atliktos visos svarbios (su žvaigždute) užduotys. Dienos, kurioms šis įprotis
+   * nesuplanuotas, seriją praleidžia (nenutraukia). Jei įpročio nėra – senoji taisyklė (bet koks atlikimas).
+   */
+  const streakHabit = () => state.tasks.find(isAutoHabit);
+
+  /** Ilgiausia įpročio serija per visą istoriją (nesuplanuotos dienos nenutraukia). */
+  function longestHabitRun(task) {
+    const done = (k) => !!(state.completions[k] && state.completions[k][task.id]);
+    const dates = Object.keys(state.completions).filter(done).sort();
+    if (!dates.length) return 0;
+    const end = today();
+    let best = 0;
+    let run = 0;
+    for (let d = dates[0], i = 0; d <= end && i < 5000; d = addDays(d, 1), i++) {
+      if (!task.days.includes(weekday(d))) continue;
+      if (done(d)) { run++; best = Math.max(best, run); } else if (d !== end) run = 0;
+    }
+    return best;
+  }
+
   function currentStreak() {
+    const h = streakHabit();
+    if (h) return habitStreak(h);
     const set = new Set(doneDates());
     let d = today();
     if (!set.has(d)) d = addDays(d, -1); // šiandiena dar nesibaigė – serija nenutrūko
@@ -365,14 +389,17 @@ LU.store = (() => {
     });
     const habits = state.tasks.filter((t) => t.type === 'habit');
     const dd = doneDates();
+    const sh = streakHabit();
     const bonusDates = state.xpLog.filter((l) => l.kind === 'bonus').map((l) => l.date).sort();
     return {
       totalXp: xp,
       level: li.level,
       levelInfo: li,
       streak: currentStreak(),
-      streakToday: !!(state.completions[today()] && Object.keys(state.completions[today()]).length),
-      longestStreak: longestRun(dd),
+      streakToday: sh
+        ? !!(state.completions[today()] && state.completions[today()][sh.id])
+        : !!(state.completions[today()] && Object.keys(state.completions[today()]).length),
+      longestStreak: sh ? longestHabitRun(sh) : longestRun(dd),
       tasksDone,
       activeDays: new Set([...state.activeDays, ...dd]).size,
       perfectRun: longestRun(bonusDates),
