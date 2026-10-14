@@ -31,7 +31,7 @@ Atsidaryk nuorodą telefone. Android'e (Chrome) pasirink ⋮ → „Įdiegti pro
 | XP už misiją / įprotį | `TASK_XP` (5) |
 | Titulai ir jų aprašymai | `TITLES` |
 | Lygių ikonų ciklas | `LEVEL_ICONS` |
-| Pasiekimai | `ACHIEVEMENTS` (kiekvienas turi `check(stats)` funkciją) |
+| Pasiekimai | `ACHIEVEMENTS` (kiekvienas turi `stat` ir `goal`: atrakinamas, kai `stats()[stat] >= goal`) |
 | Užduočių ikonos, pradinės užduotys | `TASK_ICONS`, `SEED_TASKS` |
 
 Dabartinė kreivė: kasdien atliekant viską (~55 XP/d.) Čempionu (45 lygis) tampi per 365 dienas, 10 lygį pasieki per ~10 d., 25 – per ~2,5 mėn., 50 – per ~16 mėn.

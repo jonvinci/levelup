@@ -7,7 +7,7 @@ LU.screens = LU.screens || {};
 
 LU.config = {
   APP_NAME: 'LEVEL UP',
-  VERSION: '1.6.4',
+  VERSION: '1.7.0',
 
   // ---------------- XP KREIVĖ ----------------
   MAX_LEVEL: 50,
@@ -87,16 +87,27 @@ LU.config = {
     'palette', 'shield', 'briefcase', 'telescope', 'flag', 'trophy', 'crown'],
 
   // ---------------- PASIEKIMAI ----------------
-  // check(s) gauna statistiką: { tasksDone, totalXp, level, longestStreak, perfectRun, earlyBird }
+  // Kiekvienas pasiekimas atrakinamas, kai stats()[stat] >= goal. Išdėstyti nuo lengvesnio iki sunkiausio.
+  // stat: tasksDone, totalXp, level, longestStreak (dienos iš eilės), perfectRun (visos misijos iš eilės),
+  //       earlyDays (dienos su užduotimi iki 6:00), importantDone (atliktos svarbios užduotys),
+  //       bestDay (daugiausia atliktų per vieną dieną), habitBest (ilgiausia vieno įpročio serija)
   ACHIEVEMENTS: [
-    { id: 'first_task', icon: 'footprints', name: 'Pirmas žingsnis', text: 'Atlik pirmą užduotį.', check: (s) => s.tasksDone >= 1 },
-    { id: 'streak_7', icon: 'flame', name: 'Savaitės ugnis', text: 'Išlaikyk 7 dienų seriją.', check: (s) => s.longestStreak >= 7 },
-    { id: 'early_bird', icon: 'sunrise', name: 'Ankstyvas paukštis', text: 'Atlik užduotį iki 7:00 ryto.', check: (s) => s.earlyBird },
-    { id: 'level_10', icon: 'medal', name: 'Kovotojas', text: 'Pasiek 10 lygį.', check: (s) => s.level >= 10 },
-    { id: 'perfect_7', icon: 'calendar-check', name: 'Tobula savaitė', text: 'Atlik visas dienos misijas 7 dienas iš eilės.', check: (s) => s.perfectRun >= 7 },
-    { id: 'tasks_100', icon: 'check-check', name: 'Šimtukas', text: 'Atlik 100 užduočių.', check: (s) => s.tasksDone >= 100 },
-    { id: 'xp_1000', icon: 'gem', name: 'Tūkstantis XP', text: 'Surink 1000 XP.', check: (s) => s.totalXp >= 1000 },
-    { id: 'streak_30', icon: 'crown', name: 'Mėnesio ugnis', text: 'Išlaikyk 30 dienų seriją.', check: (s) => s.longestStreak >= 30 },
+    { id: 'a2_streak_21', icon: 'flame', name: 'Įpročio gimimas', text: 'Išlaikyk 21 dienos seriją.', stat: 'longestStreak', goal: 21 },
+    { id: 'a2_level_15', icon: 'shield', name: 'Disciplinuotas', text: 'Pasiek 15 lygį.', stat: 'level', goal: 15 },
+    { id: 'a2_tasks_250', icon: 'check-check', name: 'Darbštuolis', text: 'Atlik 250 užduočių ir įpročių.', stat: 'tasksDone', goal: 250 },
+    { id: 'a2_perfect_14', icon: 'calendar-check', name: 'Tobulos dvi savaitės', text: 'Atlik visas dienos misijas 14 dienų iš eilės.', stat: 'perfectRun', goal: 14 },
+    { id: 'a2_day_12', icon: 'rocket', name: 'Produktyvi diena', text: 'Atlik 12 užduočių ir įpročių per vieną dieną.', stat: 'bestDay', goal: 12 },
+    { id: 'a2_important_50', icon: 'star', name: 'Svarbiausia – pirmiau', text: 'Atlik 50 svarbių užduočių (su žvaigždute).', stat: 'importantDone', goal: 50 },
+    { id: 'a2_early_30', icon: 'sunrise', name: 'Ankstyvas paukštis', text: 'Atlik užduotį iki 6:00 ryto 30 skirtingų dienų.', stat: 'earlyDays', goal: 30 },
+    { id: 'a2_perfect_30', icon: 'award', name: 'Tobulas mėnuo', text: 'Atlik visas dienos misijas 30 dienų iš eilės.', stat: 'perfectRun', goal: 30 },
+    { id: 'a2_habit_60', icon: 'dumbbell', name: 'Geležinis įprotis', text: 'Išlaikyk vieno įpročio 60 dienų seriją.', stat: 'habitBest', goal: 60 },
+    { id: 'a2_streak_66', icon: 'zap', name: 'Automatizmas', text: 'Išlaikyk 66 dienų seriją.', stat: 'longestStreak', goal: 66 },
+    { id: 'a2_level_25', icon: 'medal', name: 'Meistras', text: 'Pasiek 25 lygį.', stat: 'level', goal: 25 },
+    { id: 'a2_streak_100', icon: 'mountain', name: 'Šimtadienis', text: 'Išlaikyk 100 dienų seriją.', stat: 'longestStreak', goal: 100 },
+    { id: 'a2_tasks_1000', icon: 'target', name: 'Tūkstantis darbų', text: 'Atlik 1000 užduočių ir įpročių.', stat: 'tasksDone', goal: 1000 },
+    { id: 'a2_xp_10000', icon: 'gem', name: 'Dešimt tūkstančių', text: 'Surink 10 000 XP.', stat: 'totalXp', goal: 10000 },
+    { id: 'a2_level_45', icon: 'crown', name: 'Čempionas', text: 'Pasiek 45 lygį.', stat: 'level', goal: 45 },
+    { id: 'a2_streak_365', icon: 'trophy', name: 'Metai be pertraukos', text: 'Išlaikyk 365 dienų seriją.', stat: 'longestStreak', goal: 365 },
   ],
 
   // ---------------- UŽDUOTYS ----------------

@@ -355,11 +355,15 @@ LU.store = (() => {
     const xp = totalXp();
     const li = levelInfo(xp);
     let tasksDone = 0;
-    let earlyBird = false;
-    Object.values(state.completions).forEach((day) => Object.values(day).forEach((c) => {
-      tasksDone++;
-      if (new Date(c.at).getHours() < 7) earlyBird = true;
-    }));
+    let earlyDays = 0;
+    let bestDay = 0;
+    Object.values(state.completions).forEach((day) => {
+      const list = Object.values(day);
+      tasksDone += list.length;
+      bestDay = Math.max(bestDay, list.length);
+      if (list.some((c) => new Date(c.at).getHours() < 6)) earlyDays++;
+    });
+    const habits = state.tasks.filter((t) => t.type === 'habit');
     const dd = doneDates();
     const bonusDates = state.xpLog.filter((l) => l.kind === 'bonus').map((l) => l.date).sort();
     return {
@@ -372,7 +376,10 @@ LU.store = (() => {
       tasksDone,
       activeDays: new Set([...state.activeDays, ...dd]).size,
       perfectRun: longestRun(bonusDates),
-      earlyBird,
+      earlyDays,
+      bestDay,
+      importantDone: state.tasks.filter((t) => t.type === 'once' && t.doneDate && t.important).length,
+      habitBest: habits.reduce((m, t) => Math.max(m, habitStreak(t)), 0),
     };
   }
 
@@ -414,7 +421,7 @@ LU.store = (() => {
     const s = stats();
     const unlocked = [];
     C.ACHIEVEMENTS.forEach((a) => {
-      if (!state.achievements[a.id] && a.check(s)) {
+      if (!state.achievements[a.id] && (s[a.stat] || 0) >= a.goal) {
         state.achievements[a.id] = new Date().toISOString();
         unlocked.push(a);
         notify(a.icon, `Naujas pasiekimas: ${a.name}`, a.text);

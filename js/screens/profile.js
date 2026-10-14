@@ -174,6 +174,8 @@ LU.screens.profile = (() => {
   // ---------- Modalai ----------
   function openAchievements() {
     const un = S.state.achievements;
+    const st = S.stats();
+    const fmtN = (n) => n.toLocaleString('lt-LT');
     modal(`
       ${modalHeader('Pasiekimai', 'trophy')}
       <div class="px-5 sm:px-6 pb-6 space-y-2.5">
@@ -183,8 +185,9 @@ LU.screens.profile = (() => {
             <div class="flex-1 min-w-0">
               <p class="font-bold ${un[a.id] ? '' : 'text-white/70'}">${esc(a.name)}</p>
               <p class="text-sm text-muted">${esc(a.text)}</p>
+              ${un[a.id] ? '' : `<div class="mt-2 h-1 rounded-full bg-white/[0.06] overflow-hidden"><div class="h-full rounded-full bg-gold/60" style="width:${Math.min(100, ((st[a.stat] || 0) / a.goal) * 100).toFixed(1)}%"></div></div>`}
             </div>
-            ${un[a.id] ? `<span class="text-xs text-gold font-bold whitespace-nowrap">${LU.ui.dayLabel(S.util.dateKey(new Date(un[a.id])))}</span>` : ''}
+            ${un[a.id] ? `<span class="text-xs text-gold font-bold whitespace-nowrap">${LU.ui.dayLabel(S.util.dateKey(new Date(un[a.id])))}</span>` : `<span class="text-xs text-muted font-bold tabular-nums whitespace-nowrap">${fmtN(Math.min(st[a.stat] || 0, a.goal))} / ${fmtN(a.goal)}</span>`}
           </div>`).join('')}
       </div>`);
   }
