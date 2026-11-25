@@ -259,6 +259,30 @@ LU.store = (() => {
     return finishChange(res, date, before);
   }
 
+  /**
+   * Įpročių lentelė: pažymi / atšaukia įprotį bet kurią praėjusią (ar šiandienos) dieną.
+   * Ateities ir nesuplanuotų dienų žymėti negalima; automatinis įprotis – tik automatiškai.
+   */
+  function toggleHabitDay(id, date) {
+    const task = state.tasks.find((t) => t.id === id);
+    if (!task || task.type !== 'habit') return null;
+    if (isAutoHabit(task)) return { blocked: true, task };
+    if (date > today() || !task.days.includes(weekday(date))) return null;
+    if (task.createdKey && date < task.createdKey) task.createdKey = date; // pildant praeitį – įprotis „egzistavo" ir tada
+    const before = levelInfo().level;
+    const res = { done: false, xp: 0, bonus: 0, auto: 0, levelUp: null, achievements: [] };
+    const day = state.completions[date] || {};
+    if (day[id]) {
+      res.xp = -day[id].xp;
+      markUndone(task, date);
+    } else {
+      markDone(task, date);
+      res.done = true;
+      res.xp = C.TASK_XP;
+    }
+    return finishChange(res, date, before);
+  }
+
   /** Pažymi / nuima „svarbi" žymę (žvaigždutė). Gali automatiškai pažymėti „svarbių užduočių" įprotį. */
   function toggleImportant(id) {
     const t = state.tasks.find((x) => x.id === id);
@@ -620,7 +644,7 @@ LU.store = (() => {
     get state() { return state; },
     load, save, flush, commit, subscribe,
     createProfile, updateProfile, touchDay,
-    dueTasks, addTask, updateTask, deleteTask, toggleTask, toggleImportant, syncBonus, isAutoHabit, requiredDue,
+    dueTasks, addTask, updateTask, deleteTask, toggleTask, toggleHabitDay, toggleImportant, syncBonus, isAutoHabit, requiredDue,
     totalXp, levelInfo, levelStartXp, titleFor, levelIcon, stats,
     habitHistory, habitStreak, checkAchievements,
     unreadCount, markAllRead,
