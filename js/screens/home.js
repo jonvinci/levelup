@@ -3,7 +3,7 @@ window.LU = window.LU || {};
 LU.screens = LU.screens || {};
 
 LU.screens.home = (() => {
-  const { icon, esc, fmt, ring, avatar, scheduleText, dayLabel } = LU.ui;
+  const { icon, esc, fmt, ring, avatar, dayLabel } = LU.ui;
   const S = LU.store;
 
   /** hex -> rgba() su nurodytu permatomumu. */
@@ -26,7 +26,7 @@ LU.screens.home = (() => {
     ].filter(Boolean).join(';');
     const boxStyle = `background:${rgba(c, 0.12)};border:1px solid ${rgba(c, 0.35)};color:${c}`;
     return `
-    <a href="#/lygiai" class="rounded-4xl h-full p-5 sm:p-6 lg:p-8 flex flex-col justify-center gap-7 group" style="${cardStyle}">
+    <div class="rounded-4xl h-full p-5 sm:p-6 lg:p-8 flex flex-col justify-center gap-7" style="${cardStyle}">
       <div class="flex items-center gap-5">
       <div class="relative w-[84px] h-[84px] sm:w-[96px] sm:h-[96px] shrink-0">
         <span class="sm:hidden">${ring(li.pct, 84, 5, 'rgba(255,255,255,0.08)', c)}</span>
@@ -40,7 +40,6 @@ LU.screens.home = (() => {
           ${li.max ? 'Pasiekei aukščiausią lygį!' : `Dar <b style="color:${c}">${fmt(li.remaining)} XP</b> iki ${li.level + 1} lygio`}
         </p>
       </div>
-      <span class="group-hover:translate-x-1 transition" style="color:${c}">${icon('chevron-right', 'w-6 h-6')}</span>
       </div>
       <div class="hidden lg:block">
         <div class="flex items-center justify-between text-sm">
@@ -54,7 +53,7 @@ LU.screens.home = (() => {
           <span class="ml-auto text-sm"><b class="text-white">${esc(next.name)}</b> <span class="text-muted">· ${next.from} lygis</span></span>
         </div>` : ''}
       </div>
-    </a>`;
+    </div>`;
   }
 
   /** „Svarbi" žvaigždutė: tuščia, pažymėjus – auksinė. Atlikimui ir XP įtakos neturi. */
@@ -100,7 +99,7 @@ LU.screens.home = (() => {
 
   function missions() {
     // Dienos pažanga ir premija skaičiuojamos iš visko (užduotys + šiandienos įpročiai),
-    // bet sąraše rodomos tik vienkartinės užduotys – įpročiai yra „Mano įpročiai" kortelėje.
+    // bet sąraše rodomos tik vienkartinės užduotys – įpročiai žymimi „Įpročiai" lentelėje.
     const all = S.requiredDue();
     // svarbios (su žvaigždute) – viršuje, kitaip išlaikoma įprasta tvarka
     const due = all.filter((d) => d.task.type === 'once').sort((a, b) => !!b.task.important - !!a.task.important);
@@ -127,46 +126,12 @@ LU.screens.home = (() => {
     </section>`;
   }
 
-  function habitRow(t) {
-    const hist = S.habitHistory(t, 7);
-    const streak = S.habitStreak(t);
-    const doneToday = hist[hist.length - 1].done;
-    const just = LU.app.justToggled === t.id;
-    // Visa eilutė – mygtukas: paspaudus įprotis pažymimas atliktu šiandien (arba atšaukiamas)
-    return `
-    <button data-action="toggle" data-id="${t.id}" class="mission ${just ? 'just' : ''} w-full flex items-center gap-2.5 sm:gap-3 py-3.5 text-left rounded-xl" aria-pressed="${doneToday}" aria-label="${esc(t.title)} – ${doneToday ? 'atlikta šiandien, paspausk, kad atšauktum' : 'pažymėti atlikta šiandien'}">
-      <span class="chk w-8 h-8 rounded-full grid place-items-center shrink-0 ${doneToday ? 'bg-gold text-black' : 'border-2 border-white/20'}">${doneToday ? icon('check', 'w-4 h-4', 3) : ''}</span>
-      <span class="flex-1 min-w-0">
-        <span class="block font-semibold truncate ${doneToday ? 'text-white/60' : ''}">${esc(t.title)}${t.note ? `<span class="font-normal text-muted"> – ${esc(t.note)}</span>` : ''}</span>
-        <span class="mt-0.5 flex items-center gap-1 text-xs text-muted min-w-0">${icon(t.icon, 'w-3.5 h-3.5 shrink-0')}<span class="truncate">${S.isAutoHabit(t) ? 'Automatiškai · svarbios užduotys' : `${scheduleText(t.days)} · ${LU.config.TASK_XP} XP`}</span></span>
-      </span>
-      <div class="w-9 sm:w-11 shrink-0 flex items-center justify-end gap-0.5 font-extrabold tabular-nums ${streak ? 'text-flame' : 'text-dim'}">
-        ${icon('flame', 'w-4 h-4')}${streak}
-      </div>
-    </button>`;
-  }
-
-  function habits() {
-    const list = S.state.tasks.filter((t) => t.type === 'habit').sort((a, b) => a.order - b.order);
-    return `
-    <section id="habits-card" class="card card-pad scroll-mt-24">
-      <div class="flex items-center gap-3">
-        <div class="icon-box-gold w-12 h-12">${icon('repeat', 'w-6 h-6')}</div>
-        <h2 class="flex-1 text-xl sm:text-2xl font-extrabold">Mano įpročiai</h2>
-        <button data-action="manage-habits" class="text-gold font-bold text-sm inline-flex items-center gap-1">Valdyti ${icon('chevron-right', 'w-4 h-4')}</button>
-      </div>
-      ${list.length
-        ? `<div class="mt-3 divide-y divide-line">${list.map(habitRow).join('')}</div>`
-        : `<p class="mt-5 text-muted text-sm">Įpročių dar nėra. Pridėk pasikartojančią užduotį ir sek savo seriją.</p>`}
-    </section>`;
-  }
 
   function render() {
     return `
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
       <div class="lg:col-span-12">${levelCard(S.stats())}</div>
-      <div class="lg:col-span-7 lg:self-start">${missions()}</div>
-      <div class="lg:col-span-5 lg:self-start">${habits()}</div>
+      <div class="lg:col-span-12">${missions()}</div>
     </div>`;
   }
 
@@ -178,10 +143,6 @@ LU.screens.home = (() => {
     LU.app.afterChange(res);
   };
 
-  LU.actions['scroll-habits'] = () => {
-    const el = document.getElementById('habits-card');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
 
   return { render, levelCard, profileCard };
 })();

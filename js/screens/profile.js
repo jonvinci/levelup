@@ -42,7 +42,7 @@ LU.screens.profile = (() => {
           </div>
         </div>
         <div class="h-px lg:h-auto lg:w-px bg-line lg:self-stretch"></div>
-        <a href="#/lygiai" class="flex-1 lg:pl-10 block group">
+        <div class="flex-1 lg:pl-10">
           <div class="flex items-center gap-3">
             <span class="pill-outline">LYGIS ${li.level}</span>
             <span class="text-xl font-bold">${esc(li.title.name)}</span>
@@ -53,12 +53,12 @@ LU.screens.profile = (() => {
             <span class="text-muted">${li.max ? 'Aukščiausias lygis pasiektas' : `Dar <b class="text-gold">${fmt(li.remaining)} XP</b> iki ${li.level + 1} lygio`}</span>
             <b class="tabular-nums">${li.pct} %</b>
           </div>
-        </a>
+        </div>
       </div>
       <div class="h-px bg-line my-6 lg:my-8"></div>
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5">
         ${statTile(`<span class="text-flame">${icon('flame', 'w-8 h-8')}</span>`, st.streak, `${plural(st.streak, 'Diena', 'Dienos', 'Dienų')} iš eilės`)}
-        ${statTile(`<span class="text-white/90">${icon('check-check', 'w-8 h-8')}</span>`, fmt(st.tasksDone), 'Atliktos užduotys', '#/lygiai')}
+        ${statTile(`<span class="text-white/90">${icon('check-check', 'w-8 h-8')}</span>`, fmt(st.tasksDone), 'Atliktos užduotys')}
         ${statTile(`<span class="text-gold">${icon('trophy', 'w-8 h-8')}</span>`, st.longestStreak, 'Ilgiausia serija')}
         ${statTile(`<span class="text-gold">${icon('calendar-days', 'w-8 h-8')}</span>`, st.activeDays, 'Dienos su app\'u')}
       </div>

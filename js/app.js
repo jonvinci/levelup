@@ -10,7 +10,6 @@ LU.app = (() => {
     { route: '', label: 'Pagrindinis', icon: 'house' },
     { route: 'iprociai', label: 'Įpročiai', icon: 'calendar-check' },
     { route: 'kalendorius', label: 'Kalendorius', icon: 'calendar-days' },
-    { route: 'lygiai', label: 'Lygiai', icon: 'sparkles' },
     { route: 'meniu', label: 'Meniu', icon: 'menu' },
   ];
 
@@ -25,7 +24,6 @@ LU.app = (() => {
     '': LU.screens.home,
     kalendorius: LU.screens.calendar,
     iprociai: LU.screens.habits,
-    lygiai: LU.screens.levels,
     meniu: LU.screens.menu,
     profilis: LU.screens.profile,
   });
@@ -92,7 +90,7 @@ LU.app = (() => {
       <div class="h-16 px-4 flex items-center justify-between">
         ${logo()}
         <div class="flex items-center gap-1.5">
-          <a href="#/lygiai" class="flex items-center gap-1 px-2 text-gold font-extrabold">${icon('zap', 'w-5 h-5')}<span>${fmt(li.xp)}</span><span class="text-xs text-gold/70 font-bold">XP</span></a>
+          <span class="flex items-center gap-1 px-2 text-gold font-extrabold">${icon('zap', 'w-5 h-5')}<span>${fmt(li.xp)}</span><span class="text-xs text-gold/70 font-bold">XP</span></span>
           ${bellButton()}
           <a href="#/profilis" class="ml-1" aria-label="Profilis">${avatarBadge(li, 44)}</a>
         </div>
@@ -137,7 +135,7 @@ LU.app = (() => {
 
     <!-- Mobili apatinė navigacija -->
     <nav class="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-bg/95 backdrop-blur-md border-t border-line pb-[env(safe-area-inset-bottom)]">
-      <div class="grid grid-cols-5 px-1 pt-2 pb-2">
+      <div class="grid grid-cols-4 px-1 pt-2 pb-2">
         ${NAV.map((n) => `<a href="#/${n.route}" class="nav-item ${navActive(n.route) ? 'active' : ''}"><span class="nav-ico">${icon(n.icon, 'w-6 h-6')}</span>${n.label}</a>`).join('')}
       </div>
     </nav>

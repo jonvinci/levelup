@@ -35,10 +35,6 @@ LU.screens.menu = (() => {
 
       ${LU.screens.home.profileCard()}
 
-      ${section('Žaidimas', [
-        { href: '#/lygiai', ic: 'sparkles', title: 'Lygių sistema' },
-      ])}
-
       ${section('Paskyra', [
         { action: 'edit-profile', ic: 'user', title: 'Redaguoti profilį', sub: 'Vardas ir nuotrauka' },
         { action: 'edit-goals', ic: 'target', title: 'Mano tikslai' },
