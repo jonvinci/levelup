@@ -7,7 +7,7 @@ LU.screens = LU.screens || {};
 
 LU.config = {
   APP_NAME: 'LEVEL UP',
-  VERSION: '1.7.1',
+  VERSION: '1.8.0',
 
   // ---------------- XP KREIVĖ ----------------
   MAX_LEVEL: 50,
@@ -122,6 +122,23 @@ LU.config = {
     { title: 'Ryto meditacija', note: '10 min', icon: 'brain' },
     { title: 'Treniruotė', note: '30 min', icon: 'dumbbell' },
     { title: 'Knygos skaitymas', note: '20 min', icon: 'book-open' },
+  ],
+
+  // ---------------- KALENDORIUS ----------------
+  /** Įvykių spalvos (kaip Google Calendar). ink – teksto spalva ant tos spalvos. */
+  CAL_COLORS: [
+    { key: 'gold', name: 'Auksinė', hex: '#F0B429', ink: '#111' },
+    { key: 'tomato', name: 'Pomidorinė', hex: '#D50000', ink: '#fff' },
+    { key: 'flamingo', name: 'Flamingo', hex: '#E67C73', ink: '#fff' },
+    { key: 'tangerine', name: 'Mandarininė', hex: '#F4511E', ink: '#fff' },
+    { key: 'banana', name: 'Bananinė', hex: '#F6BF26', ink: '#111' },
+    { key: 'sage', name: 'Šalavijo', hex: '#33B679', ink: '#fff' },
+    { key: 'basil', name: 'Baziliko', hex: '#0B8043', ink: '#fff' },
+    { key: 'peacock', name: 'Povo', hex: '#039BE5', ink: '#fff' },
+    { key: 'blueberry', name: 'Mėlynių', hex: '#3F51B5', ink: '#fff' },
+    { key: 'lavender', name: 'Levandų', hex: '#7986CB', ink: '#fff' },
+    { key: 'grape', name: 'Vynuogių', hex: '#8E24AA', ink: '#fff' },
+    { key: 'graphite', name: 'Grafito', hex: '#616161', ink: '#fff' },
   ],
 
   /** Savaitės dienos: 1 = pirmadienis ... 7 = sekmadienis. */

@@ -12,6 +12,8 @@ const NAMES = [
   'calendar-check', 'history', 'map', 'crown', 'trophy', 'target', 'circle-check', 'circle', 'info',
   'triangle-alert', 'log-out', 'smartphone', 'clipboard-paste', 'refresh-cw', 'tag', 'medal', 'gem',
   'footprints', 'sunrise', 'rocket', 'repeat', 'list-todo', 'grip-vertical', 'award', 'gift', 'eye',
+  // Kalendorius
+  'map-pin', 'align-left', 'clock', 'calendar-plus', 'list',
   // Lygių ciklas
   'sprout', 'gamepad-2', 'swords', 'mountain', 'brain', 'hammer', 'palette', 'shield', 'briefcase',
   'telescope', 'flag',

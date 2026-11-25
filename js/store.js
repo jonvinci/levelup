@@ -20,7 +20,9 @@ window.LU = window.LU || {};
     maxLevel: number,                  // aukščiausias pasiektas lygis (kad šventė nesikartotų)
     friends: [{ id, name, xp, level, streak, best, tasks, updatedAt, addedAt }],
     notifications: [{ id, at, icon, title, text, read }],
-    lastSeen: 'YYYY-MM-DD'
+    lastSeen: 'YYYY-MM-DD',
+    events: [{ id, title, date: 'YYYY-MM-DD', allDay, start: 'HH:MM', end: 'HH:MM', color, location, note,
+               repeat: 'none'|'daily'|'weekdays'|'weekly'|'monthly'|'yearly', exdates: ['YYYY-MM-DD'], createdAt }]
   }
 */
 
@@ -49,7 +51,7 @@ LU.store = (() => {
     return {
       version: 1, profile: null, tasks: [], completions: {}, xpLog: [], activeDays: [],
       achievements: {}, maxLevel: 1, friends: [], notifications: [], lastSeen: null,
-      settings: { sound: true },
+      settings: { sound: true }, events: [],
     };
   }
 
@@ -60,6 +62,7 @@ LU.store = (() => {
     // visos užduotys ir įpročiai duoda vienodai XP (C.TASK_XP)
     state.tasks.forEach((t) => { t.xp = C.TASK_XP; });
     state.settings = Object.assign({ sound: true }, state.settings);
+    if (!Array.isArray(state.events)) state.events = [];
     ensureAutoHabit();
     return state;
   }
@@ -523,6 +526,71 @@ LU.store = (() => {
     commit();
   }
 
+  // ---------- kalendorius ----------
+  const REPEATS = ['none', 'daily', 'weekdays', 'weekly', 'monthly', 'yearly'];
+  function cleanEvent(data) {
+    const allDay = !!data.allDay;
+    let start = allDay ? null : (data.start || '09:00');
+    let end = allDay ? null : (data.end || null);
+    if (!allDay && (!end || end <= start)) {
+      const [h, m] = start.split(':').map(Number);
+      const mins = Math.min(h * 60 + m + 60, 23 * 60 + 59);
+      end = `${pad(Math.floor(mins / 60))}:${pad(mins % 60)}`;
+    }
+    return {
+      title: String(data.title || '').trim() || '(Be pavadinimo)',
+      date: data.date || today(), allDay, start, end,
+      color: data.color || 'gold',
+      location: String(data.location || '').trim(),
+      note: String(data.note || '').trim(),
+      repeat: REPEATS.includes(data.repeat) ? data.repeat : 'none',
+    };
+  }
+  function addEvent(data) {
+    const ev = { id: uid(), ...cleanEvent(data), exdates: [], createdAt: new Date().toISOString() };
+    state.events.push(ev);
+    commit();
+    return ev;
+  }
+  function updateEvent(id, data) {
+    const ev = state.events.find((e) => e.id === id);
+    if (!ev) return;
+    Object.assign(ev, cleanEvent(data));
+    commit();
+  }
+  /** Ištrina įvykį. Pasikartojančiam su `onlyDate` – tik tą vieną kartą. */
+  function deleteEvent(id, onlyDate) {
+    const ev = state.events.find((e) => e.id === id);
+    if (!ev) return;
+    if (onlyDate && ev.repeat !== 'none') {
+      ev.exdates = [...new Set([...(ev.exdates || []), onlyDate])];
+    } else {
+      state.events = state.events.filter((e) => e.id !== id);
+    }
+    commit();
+  }
+  /** Ar įvykis vyksta nurodytą dieną (įskaitant pasikartojimus). */
+  function occursOn(ev, date) {
+    if (date < ev.date || (ev.exdates && ev.exdates.includes(date))) return false;
+    if (ev.repeat === 'none' || !ev.repeat) return date === ev.date;
+    if (ev.repeat === 'daily') return true;
+    if (ev.repeat === 'weekdays') return weekday(date) <= 5;
+    if (ev.repeat === 'weekly') return weekday(date) === weekday(ev.date);
+    if (ev.repeat === 'monthly') return date.slice(8) === ev.date.slice(8);
+    if (ev.repeat === 'yearly') return date.slice(5) === ev.date.slice(5);
+    return false;
+  }
+  /** Tos dienos įvykiai: pirmiausia „visą dieną", tada pagal pradžios laiką. */
+  function eventsOn(date) {
+    return state.events.filter((e) => occursOn(e, date)).sort((a, b) =>
+      (b.allDay - a.allDay) || String(a.start).localeCompare(String(b.start)) || String(b.end).localeCompare(String(a.end)));
+  }
+  /** Vienkartinės užduotys, rodomos tą dieną kalendoriuje (ta pati logika kaip misijose). */
+  function tasksOn(date) {
+    return state.tasks.filter((t) => t.type === 'once' && isDue(t, date))
+      .sort((a, b) => (!!a.doneDate - !!b.doneDate) || (!!b.important - !!a.important) || a.order - b.order);
+  }
+
   // ---------- eksportas / importas ----------
   function exportJson() {
     return JSON.stringify({ app: 'LEVEL UP', format: 1, exportedAt: new Date().toISOString(), state }, null, 2);
@@ -535,6 +603,7 @@ LU.store = (() => {
       throw new Error('Šis failas nėra LEVEL UP atsarginė kopija.');
     }
     state = Object.assign(emptyState(), s);
+    if (!Array.isArray(state.events)) state.events = [];
     ensureAutoHabit();
     touchDay();
     syncBonus(today());
@@ -557,6 +626,7 @@ LU.store = (() => {
     unreadCount, markAllRead,
     myCode, parseCode, addFriend, removeFriend,
     exportJson, importJson, resetAll,
+    addEvent, updateEvent, deleteEvent, eventsOn, tasksOn, isDue,
     util: { today, dateKey, parseKey, addDays, weekday, uid },
   };
 })();

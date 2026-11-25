@@ -67,7 +67,7 @@
   textarea.field { @apply h-auto py-3; }
   .label { @apply block text-xs font-bold tracking-[0.15em] uppercase text-muted mb-2; }
 
-  .nav-item { @apply flex flex-col items-center gap-1 text-[11px] font-semibold text-white/60; }
+  .nav-item { @apply flex flex-col items-center gap-1 text-[10.5px] font-semibold text-white/60 tracking-tight whitespace-nowrap; }
   .nav-item .nav-ico { @apply grid place-items-center w-12 h-11 rounded-2xl border border-transparent transition; }
   .nav-item.active { @apply text-gold; }
   .nav-item.active .nav-ico { @apply bg-gold/15 border-gold/60; }

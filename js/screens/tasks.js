@@ -82,7 +82,7 @@ LU.screens.tasks = (() => {
     const today = S.util.today();
     const f = task
       ? { ...task, days: [...task.days], date: task.date && task.date > today ? task.date : today }
-      : { title: '', note: '', icon: 'target', type: preset.type || 'once', days: [1, 2, 3, 4, 5, 6, 7], date: today };
+      : { title: '', note: '', icon: 'target', type: preset.type || 'once', days: [1, 2, 3, 4, 5, 6, 7], date: preset.date && preset.date > today ? preset.date : today };
     // Tipas nustatomas pagal vietą, iš kur kuriama (misijos/užduotys – vienkartinė, įpročiai – įprotis).
     // Užduočiai – tik tekstas; įpročiui – dar trukmė, savaitės dienos ir ikona. XP visada vienodas (C.TASK_XP).
     const isHabit = f.type === 'habit';
@@ -96,9 +96,13 @@ LU.screens.tasks = (() => {
           <p data-err class="hidden mt-2 text-sm text-red-400">Įrašyk pavadinimą.</p>
         </div>
         ${!isHabit ? `
-        <div class="grid grid-cols-2 gap-2" role="group" aria-label="Kada">
+        <div class="grid grid-cols-3 gap-2" role="group" aria-label="Kada">
           <button type="button" data-when="today" class="day-opt h-11 rounded-xl border text-sm font-bold transition">Šiandien</button>
           <button type="button" data-when="tomorrow" class="day-opt h-11 rounded-xl border text-sm font-bold transition">Rytoj</button>
+          <label data-when-other class="day-opt relative h-11 rounded-xl border text-sm font-bold transition inline-flex items-center justify-center gap-1.5 px-1 cursor-pointer">
+            ${icon('calendar', 'w-4 h-4 shrink-0')}<span data-other-label class="truncate">Kita data</span>
+            <input type="date" data-date min="${today}" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" aria-label="Pasirinkti datą">
+          </label>
         </div>
         <button type="button" data-important class="day-opt w-full h-11 rounded-xl border text-sm font-bold transition inline-flex items-center justify-center gap-2">
           <span data-star-ico></span> Svarbi užduotis
@@ -146,7 +150,15 @@ LU.screens.tasks = (() => {
 
         const tomorrow = S.util.addDays(today, 1);
         function paint() {
-          el.querySelectorAll('[data-when]').forEach((b) => setCls(b, (b.dataset.when === 'tomorrow') === (f.date === tomorrow)));
+          el.querySelectorAll('[data-when]').forEach((b) => setCls(b, f.date === (b.dataset.when === 'tomorrow' ? tomorrow : today)));
+          const other = el.querySelector('[data-when-other]');
+          if (other) {
+            const isOther = f.date !== today && f.date !== tomorrow;
+            setCls(other, isOther);
+            const MON = ['saus.', 'vas.', 'kov.', 'bal.', 'geg.', 'birž.', 'liep.', 'rugp.', 'rugs.', 'spal.', 'lapkr.', 'gruod.'];
+            other.querySelector('[data-other-label]').textContent = isOther ? `${MON[Number(f.date.slice(5, 7)) - 1]} ${Number(f.date.slice(8))} d.` : 'Kita data';
+            other.querySelector('[data-date]').value = f.date;
+          }
           const imp = el.querySelector('[data-important]');
           if (imp) {
             setCls(imp, !!f.important);
@@ -162,6 +174,12 @@ LU.screens.tasks = (() => {
         if (sel && grid && task) grid.scrollTop = sel.offsetTop - grid.offsetTop - 6;
         // užduočiai – iškart rašymui (ir telefone)
         if (!isHabit) setTimeout(() => el.querySelector('#tf-title').focus(), 80);
+
+        const dateInp = el.querySelector('[data-date]');
+        if (dateInp) {
+          dateInp.addEventListener('click', () => { try { dateInp.showPicker(); } catch (err) { /* senesnės naršyklės */ } });
+          dateInp.addEventListener('change', () => { if (dateInp.value) { f.date = dateInp.value < today ? today : dateInp.value; paint(); } });
+        }
 
         el.addEventListener('click', (e) => {
           const b = e.target.closest('button');
@@ -198,7 +216,7 @@ LU.screens.tasks = (() => {
             toast(isHabit ? 'Įprotis atnaujintas' : 'Užduotis atnaujinta', { icon: 'check' });
           } else {
             S.addTask(f);
-            toast(isHabit ? 'Įprotis sukurtas' : f.date === tomorrow ? 'Užduotis pridėta rytojui' : 'Užduotis pridėta', { icon: 'plus' });
+            toast(isHabit ? 'Įprotis sukurtas' : f.date === tomorrow ? 'Užduotis pridėta rytojui' : f.date !== today ? `Užduotis pridėta: ${dayLabel(f.date).toLowerCase()}` : 'Užduotis pridėta', { icon: 'plus' });
           }
           close();
         });
@@ -220,7 +238,7 @@ LU.screens.tasks = (() => {
     }
   }
 
-  LU.actions['add-task'] = (el) => openForm(null, { type: el.dataset.type, lock: !!el.dataset.lock });
+  LU.actions['add-task'] = (el) => openForm(null, { type: el.dataset.type, lock: !!el.dataset.lock, date: el.dataset.date });
 
   /** „Valdyti" prie „Mano įpročiai": įpročių valdymo langas tiesiog pagrindiniame ekrane. */
   function openHabitsManager() {
