@@ -7,7 +7,7 @@ LU.screens = LU.screens || {};
 
 LU.config = {
   APP_NAME: 'LEVEL UP',
-  VERSION: '1.8.0',
+  VERSION: '1.8.1',
 
   // ---------------- XP KREIVĖ ----------------
   MAX_LEVEL: 50,

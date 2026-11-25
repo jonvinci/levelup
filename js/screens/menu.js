@@ -36,7 +36,6 @@ LU.screens.menu = (() => {
       ${LU.screens.home.profileCard()}
 
       ${section('Žaidimas', [
-        { href: '#/uzduotys', ic: 'list-checks', title: 'Užduotys ir įpročiai' },
         { href: '#/lygiai', ic: 'sparkles', title: 'Lygių sistema' },
         { href: '#/draugai', ic: 'crown', title: 'Lyderių lentelė' },
       ])}

@@ -8,7 +8,6 @@ LU.app = (() => {
 
   const NAV = [
     { route: '', label: 'Pagrindinis', icon: 'house' },
-    { route: 'uzduotys', label: 'Užduotys', icon: 'list-checks' },
     { route: 'kalendorius', label: 'Kalendorius', icon: 'calendar-days' },
     { route: 'lygiai', label: 'Lygiai', icon: 'sparkles' },
     { route: 'draugai', label: 'Draugai', icon: 'users' },
@@ -24,7 +23,6 @@ LU.app = (() => {
 
   const screens = () => ({
     '': LU.screens.home,
-    uzduotys: LU.screens.tasks,
     kalendorius: LU.screens.calendar,
     lygiai: LU.screens.levels,
     draugai: LU.screens.friends,
@@ -139,7 +137,7 @@ LU.app = (() => {
 
     <!-- Mobili apatinė navigacija -->
     <nav class="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-bg/95 backdrop-blur-md border-t border-line pb-[env(safe-area-inset-bottom)]">
-      <div class="grid grid-cols-6 px-0.5 pt-2 pb-2">
+      <div class="grid grid-cols-5 px-1 pt-2 pb-2">
         ${NAV.map((n) => `<a href="#/${n.route}" class="nav-item ${navActive(n.route) ? 'active' : ''}"><span class="nav-ico">${icon(n.icon, 'w-6 h-6')}</span>${n.label}</a>`).join('')}
       </div>
     </nav>
