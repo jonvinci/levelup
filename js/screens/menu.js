@@ -37,7 +37,6 @@ LU.screens.menu = (() => {
 
       ${section('Žaidimas', [
         { href: '#/lygiai', ic: 'sparkles', title: 'Lygių sistema' },
-        { href: '#/draugai', ic: 'crown', title: 'Lyderių lentelė' },
       ])}
 
       ${section('Paskyra', [
@@ -191,7 +190,7 @@ LU.screens.menu = (() => {
   LU.actions.reset = async () => {
     const ok = await confirm({
       title: 'Ištrinti visus duomenis?',
-      text: 'Bus ištrinti profilis, užduotys, XP, pasiekimai ir draugai. <b class="text-white">To atšaukti nebus galima.</b> Jei reikia, pirmiau eksportuok atsarginę kopiją.',
+      text: 'Bus ištrinti profilis, užduotys, įvykiai, XP ir pasiekimai. <b class="text-white">To atšaukti nebus galima.</b> Jei reikia, pirmiau eksportuok atsarginę kopiją.',
       confirmLabel: 'Ištrinti viską',
       danger: true,
       typeWord: 'TRINTI',

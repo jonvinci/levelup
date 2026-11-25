@@ -17,7 +17,7 @@ LU.screens.home = (() => {
     const li = st.levelInfo;
     const T = LU.config.TITLES;
     const next = T.find((t) => t.from > li.level);
-    const c = li.title.color || '#F0B429';
+    const c = li.title.color || '#E8E1D5';
     const tier = Math.max(0, T.indexOf(li.title)) / (T.length - 1); // 0 – Naujokas, 1 – Čempionas
     const cardStyle = [
       `border:1px solid ${rgba(c, 0.25 + 0.2 * tier)}`,

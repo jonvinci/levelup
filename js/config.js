@@ -7,7 +7,7 @@ LU.screens = LU.screens || {};
 
 LU.config = {
   APP_NAME: 'LEVEL UP',
-  VERSION: '1.8.1',
+  VERSION: '1.9.0',
 
   // ---------------- XP KREIVĖ ----------------
   MAX_LEVEL: 50,
@@ -127,7 +127,7 @@ LU.config = {
   // ---------------- KALENDORIUS ----------------
   /** Įvykių spalvos (kaip Google Calendar). ink – teksto spalva ant tos spalvos. */
   CAL_COLORS: [
-    { key: 'gold', name: 'Auksinė', hex: '#F0B429', ink: '#111' },
+    { key: 'gold', name: 'Šilta balta', hex: '#E8E1D5', ink: '#111' },
     { key: 'tomato', name: 'Pomidorinė', hex: '#D50000', ink: '#fff' },
     { key: 'flamingo', name: 'Flamingo', hex: '#E67C73', ink: '#fff' },
     { key: 'tangerine', name: 'Mandarininė', hex: '#F4511E', ink: '#fff' },

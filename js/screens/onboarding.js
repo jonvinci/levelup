@@ -17,7 +17,7 @@ LU.screens.onboarding = (() => {
       </div>`);
     return `
     <div class="relative min-h-[100dvh] flex flex-col items-center justify-center px-5 py-10 overflow-hidden">
-      <div class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full" style="background:radial-gradient(circle, rgba(240,180,41,.16), transparent 60%)"></div>
+      <div class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full" style="background:radial-gradient(circle, rgba(232,225,213,.16), transparent 60%)"></div>
       <div class="relative w-full max-w-md fade-in">
         <div class="text-center">${LU.app.logo('lg')}</div>
 

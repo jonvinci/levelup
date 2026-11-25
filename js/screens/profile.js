@@ -77,7 +77,7 @@ LU.screens.profile = (() => {
       </div>
       <div class="mt-5 grid grid-cols-8 gap-1.5 sm:gap-2.5">
         ${C.ACHIEVEMENTS.map((a) => `
-          <button data-action="achievements" class="aspect-square rounded-xl sm:rounded-2xl grid place-items-center border transition ${un[a.id] ? 'bg-gold/10 border-gold/40 text-gold shadow-[0_0_18px_rgba(240,180,41,0.15)]' : 'bg-card2 border-line text-white/35'}" title="${esc(a.name)}" aria-label="${esc(a.name)}">
+          <button data-action="achievements" class="aspect-square rounded-xl sm:rounded-2xl grid place-items-center border transition ${un[a.id] ? 'bg-gold/10 border-gold/40 text-gold shadow-[0_0_18px_rgba(232,225,213,0.15)]' : 'bg-card2 border-line text-white/35'}" title="${esc(a.name)}" aria-label="${esc(a.name)}">
             ${icon(un[a.id] ? a.icon : 'lock', 'w-[18px] h-[18px] sm:w-6 sm:h-6')}
           </button>`).join('')}
       </div>
@@ -109,21 +109,6 @@ LU.screens.profile = (() => {
     </section>`;
   }
 
-  function codeCard() {
-    return `
-    <section class="card card-pad lg:col-span-2">
-      <div class="flex items-center gap-3">
-        <span class="text-gold">${icon('gift', 'w-7 h-7')}</span>
-        <h2 class="flex-1 text-2xl font-extrabold">Pasidalink progresu</h2>
-      </div>
-      <p class="mt-2 text-muted">Nusiųsk savo profilio kodą draugui – jis matys tave savo lyderių lentelėje.</p>
-      <div class="mt-5 flex flex-col sm:flex-row gap-3 rounded-3xl border border-gold/20 bg-well p-3 sm:p-4 sm:items-center">
-        <code class="flex-1 min-w-0 px-2 text-gold font-mono text-sm break-all leading-relaxed">${esc(S.myCode())}</code>
-        <button data-action="copy-code" class="btn btn-sm h-12 px-5 border border-gold/40 bg-gold/10 text-gold hover:bg-gold/20">${icon('copy', 'w-5 h-5')} Kopijuoti</button>
-      </div>
-      <a href="#/draugai" class="mt-5 inline-flex items-center gap-2 text-gold font-bold">Lyderių lentelė ${icon('arrow-right', 'w-5 h-5')}</a>
-    </section>`;
-  }
 
   function render() {
     const st = S.stats();
@@ -132,7 +117,6 @@ LU.screens.profile = (() => {
       <div class="grid lg:grid-cols-2 gap-4 lg:gap-6 mt-4 lg:mt-6">
         ${achievements()}
         ${goals()}
-        ${codeCard()}
       </div>`;
   }
 
@@ -285,20 +269,6 @@ LU.screens.profile = (() => {
   LU.actions.achievements = openAchievements;
   LU.actions['edit-goals'] = openGoals;
   LU.actions['edit-profile'] = openEditProfile;
-  LU.actions['copy-code'] = async () => {
-    const code = S.myCode();
-    try {
-      await navigator.clipboard.writeText(code);
-    } catch (e) {
-      const ta = document.createElement('textarea');
-      ta.value = code;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      ta.remove();
-    }
-    toast('Kodas nukopijuotas', { icon: 'copy' });
-  };
 
   return { render, mount };
 })();
